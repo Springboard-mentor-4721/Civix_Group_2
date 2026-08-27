@@ -1,0 +1,45 @@
+<div class="brand-panel">
+  <div class="brand-header">
+    <span class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7v2h20V7L12 2z" fill="currentColor"/>
+        <rect x="4" y="10" width="2" height="8" fill="currentColor"/>
+        <rect x="9" y="10" width="2" height="8" fill="currentColor"/>
+        <rect x="13" y="10" width="2" height="8" fill="currentColor"/>
+        <rect x="18" y="10" width="2" height="8" fill="currentColor"/>
+        <rect x="2" y="19" width="20" height="2" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="brand-name">Civix</span>
+  </div>
+
+  <h1 class="brand-title">Digital Civic Engagement Platform</h1>
+  <p class="brand-subtitle">
+    Civix enables citizens to engage in local governance through petitions,
+    voting, and tracking officials' responses. Join our platform to make your
+    voice heard and drive positive change in your community.
+  </p>
+
+  <ul class="feature-list">
+    <li class="feature-item" *ngFor="let feature of features">
+      <span class="feature-icon" [ngSwitch]="feature.icon">
+        <svg *ngSwitchCase="'petition'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M14 2v5h5" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <svg *ngSwitchCase="'poll'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <svg *ngSwitchCase="'track'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="feature-copy">
+        <span class="feature-title">{{ feature.title }}</span>
+        <span class="feature-description">{{ feature.description }}</span>
+      </span>
+    </li>
+  </ul>
+</div>
