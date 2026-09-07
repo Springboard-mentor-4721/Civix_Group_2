@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 const app = express();
+const petitionRoutes = require("./routes/petitionRoutes");
 
 app.use(cors());
 app.use(express.json());
@@ -23,6 +24,9 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", require("./routes/authRoutes"));
 const locationRoutes = require("./routes/locationRoutes");
 app.use("/api/location", locationRoutes);
+
+app.use("/api/petitions", petitionRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
