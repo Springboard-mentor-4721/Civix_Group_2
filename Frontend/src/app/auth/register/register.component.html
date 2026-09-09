@@ -1,0 +1,314 @@
+<div class="auth-page">
+
+  <app-auth-layout
+    class="auth-page__panel">
+  </app-auth-layout>
+
+
+  <div class="auth-page__form">
+
+    <div class="auth-card">
+
+      <h2 class="auth-card__title">
+        Welcome to Civix
+      </h2>
+
+      <p class="auth-card__subtitle">
+        Join our platform to make your voice heard in local governance.
+      </p>
+
+
+      <!-- Login / Register Tabs -->
+
+      <div class="auth-tabs">
+
+        <a
+          class="auth-tabs__item"
+          routerLink="/login">
+          Login
+        </a>
+
+        <span
+          class="auth-tabs__item auth-tabs__item--active">
+          Register
+        </span>
+
+      </div>
+
+
+      <!-- Error Message -->
+
+      <p
+        class="form-error-banner"
+        *ngIf="errorMessage">
+
+        {{ errorMessage }}
+
+      </p>
+
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        novalidate>
+
+
+        <!-- ========================= -->
+        <!-- FULL NAME -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="name">
+            Full Name
+          </label>
+
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Jane Doe"
+            [class.form-field__input--error]="
+              name?.invalid && name?.touched
+            "
+          />
+
+          <span
+            class="form-field__error"
+            *ngIf="name?.invalid && name?.touched">
+
+            Full name is required.
+
+          </span>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- EMAIL -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="your@email.com"
+            [class.form-field__input--error]="
+              email?.invalid && email?.touched
+            "
+          />
+
+          <span
+            class="form-field__error"
+            *ngIf="email?.invalid && email?.touched">
+
+            Enter a valid email address.
+
+          </span>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- PASSWORD -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="password">
+            Password
+          </label>
+
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+            [class.form-field__input--error]="
+              password?.invalid && password?.touched
+            "
+          />
+
+          <span
+            class="form-field__error"
+            *ngIf="password?.invalid && password?.touched">
+
+            Password must be at least 6 characters.
+
+          </span>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- LOCATION -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label for="location">
+            Location
+          </label>
+
+
+          <div class="location-row">
+
+
+            <!-- Location input -->
+
+            <div class="location-input-wrapper">
+
+              <input
+                id="location"
+                type="text"
+                formControlName="location"
+                placeholder="Click Detect Location"
+                readonly
+              />
+
+
+              <!-- Green tick after successful detection -->
+
+              <span
+                class="location-success"
+                *ngIf="locationDetected"
+                title="Location detected">
+
+                ✓
+
+              </span>
+
+            </div>
+
+
+            <!-- Detect button -->
+
+            <button
+              type="button"
+              class="location-button"
+              (click)="detectLocation()"
+              [disabled]="detectingLocation">
+
+              <span *ngIf="!detectingLocation">
+
+                {{
+                  locationDetected
+                    ? 'Detect Again'
+                    : 'Detect Location'
+                }}
+
+              </span>
+
+              <span *ngIf="detectingLocation">
+
+                Detecting...
+
+              </span>
+
+            </button>
+
+          </div>
+
+
+          <!-- Status message -->
+
+          <span
+            class="location-message"
+            *ngIf="locationMessage">
+
+            {{ locationMessage }}
+
+          </span>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ROLE -->
+        <!-- ========================= -->
+
+        <div class="form-field">
+
+          <label>
+            I am registering as:
+          </label>
+
+
+          <div class="radio-group">
+
+            <label>
+
+              <input
+                type="radio"
+                formControlName="role"
+                value="citizen"
+              />
+
+              Citizen
+
+            </label>
+
+
+            <label>
+
+              <input
+                type="radio"
+                formControlName="role"
+                value="official"
+              />
+
+              Public Official
+
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- SUBMIT -->
+        <!-- ========================= -->
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="submitting">
+
+          {{
+            submitting
+              ? 'Creating account…'
+              : 'Create Account'
+          }}
+
+        </button>
+
+
+      </form>
+
+
+      <!-- ========================= -->
+      <!-- LOGIN FOOTER -->
+      <!-- ========================= -->
+
+      <p class="auth-card__footer">
+
+        Already have an account?
+
+        <a routerLink="/login">
+          Sign in
+        </a>
+
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
