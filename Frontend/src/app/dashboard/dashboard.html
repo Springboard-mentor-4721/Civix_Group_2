@@ -1,83 +1,154 @@
 <div class="civix-layout">
 
+    <!-- ================= SIDEBAR ================= -->
+
     <aside class="sidebar">
 
         <div class="brand">
             <span class="brand-icon">🏛️</span>
-            <span class="brand-name">Civix</span>
-            <span class="badge">Beta</span>
+
+            <span class="brand-name">
+                Civix
+            </span>
+
+            <span class="badge">
+                Beta
+            </span>
         </div>
+
 
         <nav class="nav-links">
 
-            <!-- Dashboard -->
             <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
                 class="nav-link">
-                🏠 Dashboard
+
+                <span class="nav-icon">⌂</span>
+
+                <span>Dashboard</span>
+
             </a>
 
-            <!-- Petitions -->
+
             <a routerLink="/dashboard" fragment="petitions" class="nav-link">
-                📄 Petitions
+
+                <span class="nav-icon">▤</span>
+
+                <span>Petitions</span>
+
             </a>
 
-            <!-- Pages not created yet -->
+
             <a href="javascript:void(0)" class="nav-link disabled-link" title="Polls page is not available yet">
-                🗳️ Polls
+
+                <span class="nav-icon">◈</span>
+
+                <span>Polls</span>
+
             </a>
+
 
             <a href="javascript:void(0)" class="nav-link disabled-link" title="Officials page is not available yet">
-                👤 Officials
+
+                <span class="nav-icon">♟</span>
+
+                <span>Officials</span>
+
             </a>
+
 
             <a href="javascript:void(0)" class="nav-link disabled-link" title="Reports page is not available yet">
-                📊 Reports
+
+                <span class="nav-icon">◔</span>
+
+                <span>Reports</span>
+
             </a>
 
+
             <a href="javascript:void(0)" class="nav-link disabled-link" title="Settings page is not available yet">
-                ⚙️ Settings
+
+                <span class="nav-icon">⚙</span>
+
+                <span>Settings</span>
+
             </a>
 
         </nav>
 
+
+        <!-- ================= COMMUNITY CARD ================= -->
+
+        <div class="sidebar-community">
+
+            <div class="plant-icon">
+                🌱
+            </div>
+
+            <div>
+
+                <strong>
+                    Stronger<br>
+                    Communities
+                </strong>
+
+                <span>
+                    Brighter Tomorrows
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= HELP ================= -->
+
         <a href="javascript:void(0)" class="nav-link help-link disabled-link"
             title="Help & Support page is not available yet">
-            ❓ Help & Support
+
+            <span class="nav-icon">
+                ?
+            </span>
+
+            <span>
+                Help & Support
+            </span>
+
         </a>
 
     </aside>
 
 
+    <!-- ================= MAIN ================= -->
+
     <div class="main">
+
+
+        <!-- ================= TOPBAR ================= -->
 
         <header class="topbar">
 
-            <nav class="top-nav">
+            <div class="search-box">
 
-                <a routerLink="/dashboard">
-                    Home
-                </a>
+                <span class="search-symbol">
+                    ⌕
+                </span>
 
-                <a routerLink="/dashboard" fragment="petitions">
-                    Petitions
-                </a>
+                <input type="text" [(ngModel)]="searchQuery" (input)="searchPetitions()"
+                    placeholder="Search petitions, locations, or topics..." />
 
-                <a href="javascript:void(0)" class="disabled-top-link" title="Polls page is not available yet">
-                    Polls
-                </a>
-
-                <a href="javascript:void(0)" class="disabled-top-link" title="Reports page is not available yet">
-                    Reports
-                </a>
-
-            </nav>
+            </div>
 
 
             <div class="top-actions">
 
-                <span class="icon">
+                <!-- NOTIFICATION -->
+
+                <span class="notification">
                     🔔
                 </span>
+
+
+                <!-- USER -->
 
                 <div class="user-chip">
 
@@ -85,12 +156,16 @@
                         {{ userName ? userName.charAt(0).toUpperCase() : 'U' }}
                     </span>
 
-                    <span>
+
+                    <span class="user-name">
                         {{ userName || 'User' }}
                     </span>
 
+
                     <button (click)="logout()" class="logout-btn">
+
                         Logout
+
                     </button>
 
                 </div>
@@ -100,82 +175,309 @@
         </header>
 
 
+        <!-- ================= CONTENT ================= -->
+
         <main class="content">
 
-            <!-- Welcome -->
-            <section class="welcome-card">
 
-                <div>
+            <!-- ================= HERO - CITIZEN ================= -->
+
+            <section class="hero" *ngIf="isCitizen()">
+
+                <div class="hero-text">
+
+                    <div class="hero-eyebrow">
+                        GOOD TO SEE YOU AGAIN
+                    </div>
+
 
                     <h1>
-                        Welcome back, {{ userName || 'there' }}!
+
+                        Welcome back,
+
+                        <span>
+                            {{ userName || 'there' }}!
+                        </span>
+
                     </h1>
+
 
                     <p>
                         See what's happening in your community and make your voice heard.
                     </p>
 
+
+                    <div class="hero-quote">
+
+                        "Real change happens when people care."
+
+                    </div>
+
                 </div>
 
-                <button routerLink="/petitions/create" class="create-btn">
-                    + Create Petition
-                </button>
+
+                <!-- ================= HERO ILLUSTRATION ================= -->
+
+                <div class="hero-illustration">
+
+                    <div class="hero-sky-circle"></div>
+
+
+                    <div class="hero-building building-one"></div>
+
+                    <div class="hero-building building-two"></div>
+
+                    <div class="hero-building building-three"></div>
+
+                    <div class="hero-building building-four"></div>
+
+
+                    <!-- DOME -->
+
+                    <div class="hero-dome">
+
+                        <div class="dome-top"></div>
+
+                        <div class="dome-body"></div>
+
+                        <div class="dome-base"></div>
+
+                    </div>
+
+
+                    <!-- TREES -->
+
+                    <div class="tree tree-one"></div>
+
+                    <div class="tree tree-two"></div>
+
+                    <div class="tree tree-three"></div>
+
+                    <div class="tree tree-four"></div>
+
+
+                    <!-- PEOPLE -->
+
+                    <div class="hero-person person-one">
+                        🧑🏽
+                    </div>
+
+                    <div class="hero-person person-two">
+                        🧑🏿
+                    </div>
+
+                    <div class="hero-person person-three">
+                        👩🏽
+                    </div>
+
+
+                    <!-- SIGNS -->
+
+                    <div class="hero-sign sign-one">
+
+                        Safer<br>
+                        Streets
+
+                    </div>
+
+
+                    <div class="hero-sign sign-two">
+
+                        Cleaner<br>
+                        Cities
+
+                    </div>
+
+
+                    <div class="hero-sign sign-three">
+
+                        Better<br>
+                        Tomorrow
+
+                    </div>
+
+
+                    <!-- VOICE MATTERS -->
+
+                    <div class="voice-matters">
+
+                        Your<br>
+                        Voice<br>
+                        Matters
+
+                    </div>
+
+                </div>
 
             </section>
 
 
-            <!-- Stats -->
-            <section class="stats-grid">
+            <!-- ================= HERO - OFFICIAL ================= -->
+
+            <section class="hero official-hero" *ngIf="isOfficial()">
+
+                <div class="hero-text">
+
+                    <div class="hero-eyebrow">
+                        CIVIX OFFICIAL PORTAL
+                    </div>
+
+
+                    <h1>
+
+                        Welcome back,
+
+                        <span>
+                            {{ userName || 'Official' }}!
+                        </span>
+
+                    </h1>
+
+
+                    <p>
+                        Monitor petitions in your locality and stay informed about community concerns.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= CITIZEN STATS ================= -->
+
+            <section class="stats-grid" *ngIf="isCitizen()">
+
+
+                <!-- MY PETITIONS -->
 
                 <div class="stat-card">
 
-                    <div class="stat-header">
-                        <span>My Petitions</span>
-                        <span class="icon">📝</span>
+                    <div class="stat-icon purple">
+                        ▤
                     </div>
 
-                    <div class="stat-value">
-                        {{ myPetitionsCount }}
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            My Petitions
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ myPetitionsCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            petitions created
+                        </div>
+
                     </div>
 
-                    <div class="stat-label">
-                        petitions
+
+                    <div class="stat-arrow purple-arrow">
+                        →
                     </div>
 
                 </div>
 
 
+                <!-- SUCCESSFUL PETITIONS -->
+
                 <div class="stat-card">
 
-                    <div class="stat-header">
-                        <span>Successful Petitions</span>
-                        <span class="icon">✅</span>
+                    <div class="stat-icon green">
+                        ✓
                     </div>
 
-                    <div class="stat-value">
-                        {{ successfulPetitionsCount }}
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Successful Petitions
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ successfulPetitionsCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            closed petitions
+                        </div>
+
                     </div>
 
-                    <div class="stat-label">
-                        closed petitions
+
+                    <div class="stat-arrow green-arrow">
+                        →
                     </div>
 
                 </div>
 
 
+                <!-- POLLS -->
+
                 <div class="stat-card">
 
-                    <div class="stat-header">
-                        <span>Polls Created</span>
-                        <span class="icon">📊</span>
+                    <div class="stat-icon orange">
+                        ◈
                     </div>
 
-                    <div class="stat-value">
-                        {{ pollsCreatedCount }}
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Polls Created
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ pollsCreatedCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            polls
+                        </div>
+
                     </div>
 
-                    <div class="stat-label">
-                        polls
+
+                    <div class="stat-arrow orange-arrow">
+                        →
+                    </div>
+
+                </div>
+
+
+                <!-- CREATE PETITION -->
+
+                <div class="stat-card create-card" routerLink="/petitions/create">
+
+                    <div class="create-icon">
+                        +
+                    </div>
+
+
+                    <div class="create-content">
+
+                        <div class="create-title">
+                            Create a Petition
+                        </div>
+
+
+                        <div class="create-subtitle">
+                            Raise an issue. Make a change.
+                        </div>
+
+                    </div>
+
+
+                    <div class="create-arrow">
+                        →
                     </div>
 
                 </div>
@@ -183,222 +485,525 @@
             </section>
 
 
-            <!-- Petition Management -->
+            <!-- ================= OFFICIAL STATS ================= -->
+
+            <section class="stats-grid official-stats" *ngIf="isOfficial()">
+
+
+                <!-- LOCAL PETITIONS -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+                        ▤
+                    </div>
+
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Local Petitions
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ localPetitionsCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            petitions in your locality
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- UNDER REVIEW -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+                        ◉
+                    </div>
+
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Under Review
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ underReviewCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            petitions
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CLOSED PETITIONS -->
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+                        ✓
+                    </div>
+
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Closed Petitions
+                        </div>
+
+
+                        <div class="stat-value">
+                            {{ closedPetitionsCount }}
+                        </div>
+
+
+                        <div class="stat-label">
+                            completed petitions
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= PETITION MANAGEMENT ================= -->
+
             <section id="petitions" class="petitions-section">
+
+
+                <!-- SECTION HEADER -->
 
                 <div class="section-header">
 
-                    <div>
+                    <div class="section-heading">
 
-                        <h2>
-                            Petition Management
-                        </h2>
+                        <div class="section-icon">
+                            ▤
+                        </div>
 
-                        <p>
-                            Browse petitions and support causes in your community.
-                        </p>
+
+                        <div>
+
+                            <h2 *ngIf="isCitizen()">
+                                Petition Management
+                            </h2>
+
+
+                            <h2 *ngIf="isOfficial()">
+                                Local Petitions
+                            </h2>
+
+
+                            <p *ngIf="isCitizen()">
+                                Browse petitions and support causes in your community.
+                            </p>
+
+
+                            <p *ngIf="isOfficial()">
+                                View petitions related to your locality and monitor their current status.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="location-search">
+
+                        <span>
+                            📍
+                        </span>
+
+
+                        <input *ngIf="isCitizen()" type="text" [(ngModel)]="locationFilter" (input)="applyFilters()"
+                            placeholder="Filter by location..." />
+
+
+                        <input *ngIf="isOfficial()" type="text" [value]="location" readonly
+                            placeholder="Your locality" />
+
+
+                        <span class="location-arrow">
+                            ⌄
+                        </span>
 
                     </div>
 
                 </div>
 
 
-                <!-- LOCATION FILTER -->
-                <div class="filter-row">
+                <!-- ================= CLEAR LOCATION ================= -->
 
-                    <div class="location-search">
+                <div class="clear-location-wrap" *ngIf="isCitizen() && locationFilter">
 
-                        <span class="search-icon">
-                            📍
-                        </span>
+                    <button type="button" class="clear-location-btn" (click)="clearLocationFilter()">
 
-                        <input type="text" [(ngModel)]="locationFilter" (input)="applyFilters()"
-                            placeholder="Filter by location..." />
+                        Clear location
 
-                    </div>
-
-                    <button *ngIf="locationFilter" type="button" class="clear-location-btn"
-                        (click)="clearLocationFilter()">
-                        Clear Location
                     </button>
 
                 </div>
 
 
-                <!-- CATEGORY FILTERS -->
+                <!-- ================= CATEGORIES ================= -->
+
                 <div class="category-chips">
 
                     <button *ngFor="let cat of categories" class="chip" [class.active]="selectedCategory === cat"
                         (click)="selectCategory(cat)">
+
                         {{ cat }}
+
                     </button>
 
                 </div>
 
 
-                <!-- ACTIVE FILTERS -->
-                <div *ngIf="locationFilter || selectedCategory !== 'All Categories'" class="active-filters">
+                <!-- ================= ACTIVE FILTERS ================= -->
+
+                <div *ngIf="isCitizen() && (locationFilter || selectedCategory !== 'All Categories')"
+                    class="active-filters">
 
                     <span class="filter-label">
                         Active filters:
                     </span>
 
+
                     <span *ngIf="selectedCategory !== 'All Categories'" class="filter-tag">
+
                         Category: {{ selectedCategory }}
+
                     </span>
+
 
                     <span *ngIf="locationFilter" class="filter-tag">
+
                         Location: {{ locationFilter }}
+
                     </span>
 
+
                     <button type="button" class="clear-btn-small" (click)="clearFilters()">
+
                         Clear All
+
                     </button>
 
                 </div>
 
 
-                <!-- Petition Count -->
-                <div *ngIf="petitions.length > 0" class="petition-count">
-                    Showing
-                    {{ petitions.length }}
-                    petition{{ petitions.length === 1 ? '' : 's' }}
+                <!-- ================= TOOLBAR ================= -->
+
+                <div *ngIf="petitions.length > 0" class="petition-toolbar">
+
+
+                    <div class="petition-count">
+
+                        Showing
+
+                        <strong>
+                            {{ petitions.length }}
+                        </strong>
+
+                        petition{{ petitions.length === 1 ? '' : 's' }}
+
+                    </div>
+
+
+                    <div class="sort-area">
+
+                        <span>
+                            Sort by:
+                        </span>
+
+
+                        <button class="sort-button">
+
+                            Recently Added
+
+                            <span>
+                                ⌄
+                            </span>
+
+                        </button>
+
+
+                        <button class="view-button active-view">
+                            ▦
+                        </button>
+
+
+                        <button class="view-button">
+                            ☷
+                        </button>
+
+                    </div>
+
                 </div>
 
 
-                <!-- Empty State -->
+                <!-- ================= EMPTY STATE ================= -->
+
                 <div *ngIf="petitions.length === 0" class="empty-state">
 
                     <div class="empty-icon">
                         📄
                     </div>
 
+
                     <h3>
                         No petitions found
                     </h3>
 
-                    <p>
+
+                    <p *ngIf="isCitizen()">
                         No petitions match the current filters.
                     </p>
 
-                    <button (click)="clearFilters()" class="clear-btn">
+
+                    <p *ngIf="isOfficial()">
+                        No petitions were found in your locality.
+                    </p>
+
+
+                    <button *ngIf="isCitizen()" (click)="clearFilters()" class="clear-btn">
+
                         Clear Filters
+
                     </button>
 
                 </div>
 
 
-                <!-- Petition List -->
+                <!-- ================= PETITION LIST ================= -->
+
                 <div *ngIf="petitions.length > 0" class="petitions-list">
+
 
                     <div *ngFor="let p of petitions" class="petition-card">
 
-                        <!-- Card Header -->
-                        <div class="petition-card-header">
 
-                            <div>
+                        <!-- ================= THUMBNAIL ================= -->
+
+                        <div class="petition-thumb">
+
+                            <div class="thumb-sky"></div>
+
+                            <div class="thumb-road"></div>
+
+
+                            <div class="thumb-light light-one"></div>
+
+                            <div class="thumb-light light-two"></div>
+
+                            <div class="thumb-light light-three"></div>
+
+
+                            <div class="thumb-tree tree-left"></div>
+
+                            <div class="thumb-tree tree-right"></div>
+
+                        </div>
+
+
+                        <!-- ================= PETITION CONTENT ================= -->
+
+                        <div class="petition-main">
+
+
+                            <!-- TITLE + STATUS -->
+
+                            <div class="petition-title-row">
 
                                 <h3>
                                     {{ p.title }}
                                 </h3>
 
-                                <div class="petition-meta">
 
-                                    <span class="tag">
-                                        {{ p.category }}
-                                    </span>
+                                <span class="status" [class.status-active]="p.status === 'active'"
+                                    [class.status-review]="p.status === 'under_review'"
+                                    [class.status-closed]="p.status === 'closed'">
 
-                                    <span class="location">
-                                        📍 {{ p.location }}
-                                    </span>
+                                    {{
+                                    p.status === 'active'
+                                    ? 'Active'
+                                    : p.status === 'under_review'
+                                    ? 'Under Review'
+                                    : 'Closed'
+                                    }}
 
-                                </div>
+                                </span>
 
                             </div>
 
 
-                            <!-- Status -->
-                            <span class="status" [class.status-active]="p.status === 'active'"
-                                [class.status-review]="p.status === 'under_review'"
-                                [class.status-closed]="p.status === 'closed'">
-                                {{
-                                p.status === 'active'
-                                ? 'Active'
-                                : p.status === 'under_review'
-                                ? 'Under Review'
-                                : 'Closed'
-                                }}
-                            </span>
+                            <!-- META -->
+
+                            <div class="petition-meta">
+
+                                <span class="tag">
+                                    {{ p.category }}
+                                </span>
+
+
+                                <span class="location">
+                                    📍 {{ p.location }}
+                                </span>
+
+
+                                <span class="petition-date">
+
+                                    📅
+                                    Sep 10, 2025
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <p class="petition-description">
+                                {{ p.description }}
+                            </p>
+
+
+                            <!-- BOTTOM INFO -->
+
+                            <div class="petition-bottom">
+
+                                <span class="signature-count">
+
+                                    👥
+                                    {{ p.signatureCount || 0 }}
+                                    supports
+
+                                </span>
+
+
+                                <span class="comment-count">
+
+                                    💬
+                                    0 comments
+
+                                </span>
+
+
+                                <span class="petition-id">
+
+                                    Petition #{{ p.id }}
+
+                                </span>
+
+                            </div>
 
                         </div>
 
 
-                        <!-- Description -->
-                        <p class="petition-description">
-                            {{ p.description }}
-                        </p>
+                        <!-- ================= ACTIONS ================= -->
+
+                        <div class="petition-actions">
 
 
-                        <!-- Footer -->
-                        <div class="petition-footer">
+                            <!-- EDIT -->
 
-                            <div class="petition-info">
+                            <button *ngIf="isCitizen() && p.creator_id === currentUserId" class="edit-btn"
+                                [routerLink]="['/petitions/edit', p.id]">
 
-                                <span class="petition-id">
-                                    Petition #{{ p.id }}
-                                </span>
+                                ✏ Edit
 
-                                <span *ngIf="p.signatureCount > 0" class="signature-count">
-                                    ✍️ {{ p.signatureCount }}
-                                    {{ p.signatureCount === 1 ? 'signature' : 'signatures' }}
-                                </span>
-
-                            </div>
+                            </button>
 
 
-                            <div class="petition-actions">
+                            <!-- SIGN -->
 
-                                <!-- Edit -->
-                                <button *ngIf="p.creator_id === currentUserId" class="edit-btn"
-                                    [routerLink]="['/petitions/edit', p.id]">
-                                    ✏️ Edit
-                                </button>
+                            <button *ngIf="isCitizen() && p.status === 'active' && !p.signed" class="sign-btn"
+                                [disabled]="p.signing" (click)="signPetition(p)">
 
+                                {{
+                                p.signing
+                                ? 'Signing...'
+                                : '👍 Sign Petition'
+                                }}
 
-                                <!-- Sign -->
-                                <button *ngIf="p.status === 'active' && !p.signed" class="sign-btn"
-                                    [disabled]="p.signing" (click)="signPetition(p)">
-                                    {{
-                                    p.signing
-                                    ? 'Signing...'
-                                    : '✋ Sign Petition'
-                                    }}
-                                </button>
+                            </button>
 
 
-                                <!-- Already Signed -->
-                                <button *ngIf="p.status === 'active' && p.signed" class="signed-btn"
-                                    [disabled]="p.signing" (click)="unsignPetition(p)">
-                                    {{
-                                    p.signing
-                                    ? 'Removing...'
-                                    : '✓ Signed'
-                                    }}
-                                </button>
+                            <!-- SIGNED -->
+
+                            <button *ngIf="isCitizen() && p.status === 'active' && p.signed" class="signed-btn"
+                                [disabled]="p.signing" (click)="unsignPetition(p)">
+
+                                {{
+                                p.signing
+                                ? 'Removing...'
+                                : '✓ Signed'
+                                }}
+
+                            </button>
 
 
-                                <!-- Under Review -->
-                                <span *ngIf="p.status === 'under_review'" class="review-label">
-                                    Under Review
-                                </span>
+                            <!-- UNDER REVIEW -->
+
+                            <span *ngIf="isCitizen() && p.status === 'under_review'" class="review-label">
+
+                                Under Review
+
+                            </span>
 
 
-                                <!-- Closed -->
-                                <span *ngIf="p.status === 'closed'" class="closed-label">
-                                    Petition Closed
-                                </span>
+                            <!-- CLOSED -->
 
-                            </div>
+                            <span *ngIf="isCitizen() && p.status === 'closed'" class="closed-label">
+
+                                Petition Closed
+
+                            </span>
+
+
+                            <!-- OFFICIAL ACTIVE -->
+
+                            <span *ngIf="isOfficial() && p.status === 'active'" class="review-label">
+
+                                📋 Monitor
+
+                            </span>
+
+
+                            <!-- OFFICIAL REVIEW -->
+
+                            <span *ngIf="isOfficial() && p.status === 'under_review'" class="review-label">
+
+                                🔍 Under Review
+
+                            </span>
+
+
+                            <!-- OFFICIAL CLOSED -->
+
+                            <span *ngIf="isOfficial() && p.status === 'closed'" class="closed-label">
+
+                                ✓ Closed
+
+                            </span>
 
                         </div>
 

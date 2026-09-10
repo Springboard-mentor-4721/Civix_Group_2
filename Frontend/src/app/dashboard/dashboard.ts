@@ -55,15 +55,25 @@ export class Dashboard implements OnInit {
   // Location filter input
   locationFilter = '';
 
+  // Search input
+  searchQuery = '';
+
   allPetitions: PetitionWithSignature[] = [];
   petitions: PetitionWithSignature[] = [];
 
+  // Citizen statistics
   myPetitionsCount = 0;
   successfulPetitionsCount = 0;
   pollsCreatedCount = 0;
 
+  // Official statistics
+  localPetitionsCount = 0;
+  underReviewCount = 0;
+  closedPetitionsCount = 0;
+
   currentUserId!: number;
   userName = '';
+  userRole = '';
 
   constructor(
     private authService: AuthService,
@@ -78,17 +88,34 @@ export class Dashboard implements OnInit {
 
     this.currentUserId = Number(user?.id);
     this.userName = user?.name ?? '';
+    this.userRole = user?.role ?? '';
     this.location = user?.location ?? this.location;
 
     this.selectedCategory = 'All Categories';
     this.locationFilter = '';
+    this.searchQuery = '';
 
     this.loadPetitions();
   }
 
-  /*
-   * LOAD PETITIONS
-   */
+
+  /* =========================================================
+     CHECK USER ROLE
+  ========================================================= */
+
+  isCitizen(): boolean {
+    return this.userRole === 'citizen';
+  }
+
+  isOfficial(): boolean {
+    return this.userRole === 'official';
+  }
+
+
+  /* =========================================================
+     LOAD PETITIONS
+  ========================================================= */
+
   loadPetitions(): void {
 
     this.http
@@ -110,22 +137,25 @@ export class Dashboard implements OnInit {
             })
           );
 
+          /*
+           * Calculate role-specific statistics
+           */
+          this.calculateStatistics();
+
+          /*
+           * Apply category/location/search filters
+           */
           this.applyFilters();
-
-          this.myPetitionsCount = this.allPetitions.filter(
-            petition =>
-              Number(petition.creator_id) === this.currentUserId
-          ).length;
-
-          this.successfulPetitionsCount = this.allPetitions.filter(
-            petition =>
-              Number(petition.creator_id) === this.currentUserId &&
-              petition.status === 'closed'
-          ).length;
 
           this.changeDetectorRef.detectChanges();
 
-          this.loadSignatureStatuses();
+          /*
+           * Signature information is only needed
+           * for citizens.
+           */
+          if (this.isCitizen()) {
+            this.loadSignatureStatuses();
+          }
         },
 
         error: (err) => {
@@ -140,15 +170,82 @@ export class Dashboard implements OnInit {
 
           this.myPetitionsCount = 0;
           this.successfulPetitionsCount = 0;
+          this.pollsCreatedCount = 0;
+
+          this.localPetitionsCount = 0;
+          this.underReviewCount = 0;
+          this.closedPetitionsCount = 0;
 
           this.changeDetectorRef.detectChanges();
         }
       });
   }
 
-  /*
-   * LOAD SIGNATURE STATUS
-   */
+
+  /* =========================================================
+     CALCULATE STATISTICS
+  ========================================================= */
+
+  calculateStatistics(): void {
+
+    /*
+     * Citizen statistics
+     */
+
+    this.myPetitionsCount =
+      this.allPetitions.filter(
+        petition =>
+          Number(petition.creator_id) === this.currentUserId
+      ).length;
+
+    this.successfulPetitionsCount =
+      this.allPetitions.filter(
+        petition =>
+          Number(petition.creator_id) === this.currentUserId &&
+          petition.status === 'closed'
+      ).length;
+
+
+    /*
+     * Official statistics
+     *
+     * Officials have admin-like access.
+     * They can see ALL petitions, not only
+     * petitions from their own locality.
+     */
+
+    if (this.isOfficial()) {
+
+      const allOfficialPetitions = this.allPetitions;
+
+      this.localPetitionsCount =
+        allOfficialPetitions.length;
+
+      this.underReviewCount =
+        allOfficialPetitions.filter(
+          petition =>
+            petition.status === 'under_review'
+        ).length;
+
+      this.closedPetitionsCount =
+        allOfficialPetitions.filter(
+          petition =>
+            petition.status === 'closed'
+        ).length;
+
+    } else {
+
+      this.localPetitionsCount = 0;
+      this.underReviewCount = 0;
+      this.closedPetitionsCount = 0;
+    }
+  }
+
+
+  /* =========================================================
+     LOAD SIGNATURE STATUS
+  ========================================================= */
+
   loadSignatureStatuses(): void {
 
     for (const petition of this.allPetitions) {
@@ -207,12 +304,18 @@ export class Dashboard implements OnInit {
     }
   }
 
-  /*
-   * SIGN PETITION
-   */
+
+  /* =========================================================
+     SIGN PETITION
+  ========================================================= */
+
   signPetition(
     petition: PetitionWithSignature
   ): void {
+
+    if (!this.isCitizen()) {
+      return;
+    }
 
     if (petition.signing) {
       return;
@@ -275,12 +378,18 @@ export class Dashboard implements OnInit {
       });
   }
 
-  /*
-   * UNSIGN PETITION
-   */
+
+  /* =========================================================
+     UNSIGN PETITION
+  ========================================================= */
+
   unsignPetition(
     petition: PetitionWithSignature
   ): void {
+
+    if (!this.isCitizen()) {
+      return;
+    }
 
     if (petition.signing) {
       return;
@@ -341,9 +450,11 @@ export class Dashboard implements OnInit {
       });
   }
 
-  /*
-   * APPLY CATEGORY + LOCATION FILTERS
-   */
+
+  /* =========================================================
+     APPLY SEARCH + CATEGORY + LOCATION FILTERS
+  ========================================================= */
+
   applyFilters(): void {
 
     const selectedCategory =
@@ -356,12 +467,19 @@ export class Dashboard implements OnInit {
         .trim()
         .toLowerCase();
 
+    const search =
+      this.searchQuery
+        .trim()
+        .toLowerCase();
+
+
     this.petitions =
       this.allPetitions.filter(petition => {
 
         /*
-         * Category condition
+         * CATEGORY CONDITION
          */
+
         const categoryMatches =
           selectedCategory === 'all categories' ||
           (
@@ -371,9 +489,17 @@ export class Dashboard implements OnInit {
               .toLowerCase() === selectedCategory
           );
 
+
         /*
-         * Location condition
+         * MANUAL LOCATION FILTER
+         *
+         * This filter is optional.
+         *
+         * Officials can see all petitions by default.
+         * If they manually enter a location, petitions
+         * are filtered according to that location.
          */
+
         const locationMatches =
           !selectedLocation ||
           (
@@ -384,18 +510,74 @@ export class Dashboard implements OnInit {
               .includes(selectedLocation)
           );
 
+
         /*
-         * Both conditions must match
+         * SEARCH CONDITION
+         *
+         * Search works on:
+         * - Petition title
+         * - Description
+         * - Category
+         * - Location
          */
-        return categoryMatches && locationMatches;
+
+        const searchMatches =
+          !search ||
+          (
+            petition.title &&
+            petition.title
+              .toLowerCase()
+              .includes(search)
+          ) ||
+          (
+            petition.description &&
+            petition.description
+              .toLowerCase()
+              .includes(search)
+          ) ||
+          (
+            petition.category &&
+            petition.category
+              .toLowerCase()
+              .includes(search)
+          ) ||
+          (
+            petition.location &&
+            petition.location
+              .toLowerCase()
+              .includes(search)
+          );
+
+
+        /*
+         * ALL CONDITIONS MUST MATCH
+         */
+
+        return (
+          categoryMatches &&
+          locationMatches &&
+          searchMatches
+        );
       });
+
 
     this.changeDetectorRef.detectChanges();
   }
 
-  /*
-   * SELECT CATEGORY
-   */
+
+  /* =========================================================
+     SEARCH PETITIONS
+  ========================================================= */
+
+  searchPetitions(): void {
+    this.applyFilters();
+  }
+
+
+  /* =========================================================
+     SELECT CATEGORY
+  ========================================================= */
+
   selectCategory(category: string): void {
 
     this.selectedCategory = category;
@@ -403,9 +585,11 @@ export class Dashboard implements OnInit {
     this.applyFilters();
   }
 
-  /*
-   * CLEAR LOCATION FILTER
-   */
+
+  /* =========================================================
+     CLEAR LOCATION FILTER
+  ========================================================= */
+
   clearLocationFilter(): void {
 
     this.locationFilter = '';
@@ -413,28 +597,32 @@ export class Dashboard implements OnInit {
     this.applyFilters();
   }
 
-  /*
-   * CLEAR ALL FILTERS
-   */
+
+  /* =========================================================
+     CLEAR ALL FILTERS
+  ========================================================= */
+
   clearFilters(): void {
 
     this.selectedCategory = 'All Categories';
+
     this.locationFilter = '';
 
-    this.petitions = [
-      ...this.allPetitions
-    ];
+    this.searchQuery = '';
 
-    this.changeDetectorRef.detectChanges();
+    this.applyFilters();
   }
 
-  /*
-   * LOGOUT
-   */
+
+  /* =========================================================
+     LOGOUT
+  ========================================================= */
+
   logout(): void {
 
     this.authService.logout();
 
     this.router.navigate(['/login']);
   }
+
 }
