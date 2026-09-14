@@ -56,4 +56,9 @@ export class AuthService {
     get token(): string | null {
         return localStorage.getItem('civix_token');
     }
+
+    get currentUser(): AuthUser | null {
+        const raw = localStorage.getItem('civix_user');
+        return raw ? JSON.parse(raw) : null;
+    }
 }
