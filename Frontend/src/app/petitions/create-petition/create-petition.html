@@ -45,8 +45,13 @@
                     Title <span class="required">*</span>
                 </span>
 
-                <input type="text" [(ngModel)]="title" name="title" maxlength="200"
-                    placeholder="Enter a clear and concise title for your petition" />
+                <input
+                    type="text"
+                    [(ngModel)]="title"
+                    name="title"
+                    maxlength="200"
+                    placeholder="Enter a clear and concise title for your petition"
+                />
 
                 <span class="character-count">
                     {{ title.length }}/200
@@ -60,8 +65,12 @@
                     Description <span class="required">*</span>
                 </span>
 
-                <textarea [(ngModel)]="description" name="description" rows="5"
-                    placeholder="Provide details about your petition, the issue, and what changes you want to see..."></textarea>
+                <textarea
+                    [(ngModel)]="description"
+                    name="description"
+                    rows="5"
+                    placeholder="Provide details about your petition, the issue, and what changes you want to see..."
+                ></textarea>
             </label>
 
             <!-- Category + Location -->
@@ -73,10 +82,18 @@
                         Category <span class="required">*</span>
                     </span>
 
-                    <select [(ngModel)]="category" name="category">
-                        <option value="" disabled>Select category</option>
+                    <select
+                        [(ngModel)]="category"
+                        name="category"
+                    >
+                        <option value="" disabled>
+                            Select category
+                        </option>
 
-                        <option *ngFor="let c of categories" [value]="c">
+                        <option
+                            *ngFor="let c of categories"
+                            [value]="c"
+                        >
                             {{ c }}
                         </option>
                     </select>
@@ -88,7 +105,12 @@
                         Location <span class="required">*</span>
                     </span>
 
-                    <input type="text" [(ngModel)]="location" name="location" placeholder="e.g. San Diego, CA" />
+                    <input
+                        type="text"
+                        [(ngModel)]="location"
+                        name="location"
+                        placeholder="e.g. San Diego, CA"
+                    />
                 </label>
 
             </div>
@@ -100,12 +122,18 @@
                     Signature Limit <span class="required">*</span>
                 </span>
 
-                <select [(ngModel)]="signatureLimit" name="signatureLimit">
+                <select
+                    [(ngModel)]="signatureLimit"
+                    name="signatureLimit"
+                >
                     <option [ngValue]="null" disabled>
                         Select signature limit
                     </option>
 
-                    <option *ngFor="let limit of signatureLimits" [ngValue]="limit">
+                    <option
+                        *ngFor="let limit of signatureLimits"
+                        [ngValue]="limit"
+                    >
                         {{ limit }} signatures
                     </option>
                 </select>
@@ -116,19 +144,31 @@
             </label>
 
             <!-- Error -->
-            <p class="error" *ngIf="errorMessage">
+            <p
+                class="error"
+                *ngIf="errorMessage"
+            >
                 {{ errorMessage }}
             </p>
 
             <!-- Buttons -->
             <div class="form-actions">
 
-                <button type="button" class="back-btn" (click)="goBack()" [disabled]="loading">
+                <button
+                    type="button"
+                    class="back-btn"
+                    (click)="goBack()"
+                    [disabled]="loading"
+                >
                     <span>←</span>
                     Back
                 </button>
 
-                <button type="submit" class="submit-btn" [disabled]="loading">
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    [disabled]="loading"
+                >
                     <span class="send-icon">➤</span>
                     {{ loading ? 'Submitting...' : 'Submit Petition' }}
                 </button>
@@ -147,7 +187,11 @@
         </div>
 
         <div class="community-message">
-            <strong>A Better<br />Community<br />Starts With You</strong>
+            <strong>
+                A Better<br />
+                Community<br />
+                Starts With You
+            </strong>
         </div>
 
         <!-- CSS Illustration -->

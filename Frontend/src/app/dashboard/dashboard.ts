@@ -7,6 +7,12 @@ import { AuthService } from '../core/auth.service';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
+/*
+ * =========================================================
+ * PETITION INTERFACE
+ * =========================================================
+ */
+
 interface Petition {
   id: number;
   creator_id: number;
@@ -15,13 +21,27 @@ interface Petition {
   category: string;
   location: string;
   status: 'active' | 'under_review' | 'closed';
+
+  // Optional because older petitions may not have it
+  signatureLimit?: number;
+
+  // Backend returns this field
+  signatureCount?: number;
 }
+
+
+/*
+ * =========================================================
+ * PETITION WITH FRONTEND STATE
+ * =========================================================
+ */
 
 interface PetitionWithSignature extends Petition {
   signed: boolean;
   signatureCount: number;
   signing: boolean;
 }
+
 
 @Component({
   selector: 'app-dashboard',
@@ -37,6 +57,12 @@ interface PetitionWithSignature extends Petition {
 })
 export class Dashboard implements OnInit {
 
+  /*
+   * =========================================================
+   * CATEGORIES
+   * =========================================================
+   */
+
   categories = [
     'All Categories',
     'Environment',
@@ -50,30 +76,77 @@ export class Dashboard implements OnInit {
 
   selectedCategory = 'All Categories';
 
+
+  /*
+   * =========================================================
+   * USER LOCATION
+   * =========================================================
+   */
+
   location = 'San Diego, CA';
 
-  // Location filter input
+  // Manual location filter
   locationFilter = '';
 
   // Search input
   searchQuery = '';
 
+
+  /*
+   * =========================================================
+   * PETITIONS
+   * =========================================================
+   */
+
   allPetitions: PetitionWithSignature[] = [];
+
   petitions: PetitionWithSignature[] = [];
 
-  // Citizen statistics
+
+  /*
+   * =========================================================
+   * CITIZEN STATISTICS
+   * =========================================================
+   */
+
   myPetitionsCount = 0;
+
   successfulPetitionsCount = 0;
+
   pollsCreatedCount = 0;
 
-  // Official statistics
+
+  /*
+   * =========================================================
+   * OFFICIAL STATISTICS
+   * =========================================================
+   */
+
   localPetitionsCount = 0;
+
   underReviewCount = 0;
+
   closedPetitionsCount = 0;
 
+
+  /*
+   * =========================================================
+   * CURRENT USER
+   * =========================================================
+   */
+
   currentUserId!: number;
+
   userName = '';
+
   userRole = '';
+
+
+  /*
+   * =========================================================
+   * CONSTRUCTOR
+   * =========================================================
+   */
 
   constructor(
     private authService: AuthService,
@@ -82,81 +155,184 @@ export class Dashboard implements OnInit {
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
+
+  /*
+   * =========================================================
+   * INITIALIZATION
+   * =========================================================
+   */
+
   ngOnInit(): void {
 
     const user = this.authService.currentUser;
 
     this.currentUserId = Number(user?.id);
+
     this.userName = user?.name ?? '';
+
     this.userRole = user?.role ?? '';
+
     this.location = user?.location ?? this.location;
 
     this.selectedCategory = 'All Categories';
+
     this.locationFilter = '';
+
     this.searchQuery = '';
 
     this.loadPetitions();
   }
 
 
-  /* =========================================================
-     CHECK USER ROLE
-  ========================================================= */
+  /*
+   * =========================================================
+   * CHECK USER ROLE
+   * =========================================================
+   */
 
   isCitizen(): boolean {
     return this.userRole === 'citizen';
   }
+
 
   isOfficial(): boolean {
     return this.userRole === 'official';
   }
 
 
-  /* =========================================================
-     LOAD PETITIONS
-  ========================================================= */
+  /*
+   * =========================================================
+   * LOAD PETITIONS
+   *
+   * IMPORTANT:
+   * Backend currently returns:
+   *
+   * [
+   *   {
+   *      id: 6,
+   *      title: "...",
+   *      ...
+   *   }
+   * ]
+   *
+   * NOT:
+   *
+   * {
+   *    count: 2,
+   *    petitions: [...]
+   * }
+   * =========================================================
+   */
 
   loadPetitions(): void {
 
+    console.log('Loading petitions...');
+
     this.http
-      .get<{ count: number; petitions: Petition[] }>(
-        `${API_BASE_URL}/petitions`
-      )
+      .get<Petition[]>(`${API_BASE_URL}/petitions`)
       .subscribe({
+
+        /*
+         * =====================================================
+         * SUCCESS
+         * =====================================================
+         */
 
         next: (res) => {
 
-          const receivedPetitions = res.petitions || [];
-
-          this.allPetitions = receivedPetitions.map(
-            petition => ({
-              ...petition,
-              signed: false,
-              signatureCount: 0,
-              signing: false
-            })
+          console.log(
+            'Petitions received from API:',
+            res
           );
 
-          /*
-           * Calculate role-specific statistics
-           */
-          this.calculateStatistics();
 
           /*
-           * Apply category/location/search filters
+           * Backend returns a direct array.
+           *
+           * Safety check ensures that an unexpected
+           * response does not break the dashboard.
            */
+
+          const receivedPetitions =
+            Array.isArray(res)
+              ? res
+              : [];
+
+
+          /*
+           * Convert backend petitions into
+           * frontend PetitionWithSignature objects.
+           */
+
+          this.allPetitions =
+            receivedPetitions.map(
+              (petition) => ({
+
+                ...petition,
+
+                signed: false,
+
+                /*
+                 * Use signatureCount returned by backend.
+                 */
+
+                signatureCount:
+                  Number(
+                    petition.signatureCount ?? 0
+                  ),
+
+                signing: false
+
+              })
+            );
+
+
+          console.log(
+            'Petitions loaded into dashboard:',
+            this.allPetitions
+          );
+
+
+          /*
+           * Calculate statistics
+           */
+
+          this.calculateStatistics();
+
+
+          /*
+           * Apply filters
+           */
+
           this.applyFilters();
+
+
+          /*
+           * Force Angular UI update
+           */
 
           this.changeDetectorRef.detectChanges();
 
+
           /*
-           * Signature information is only needed
+           * Load individual signature status
            * for citizens.
            */
+
           if (this.isCitizen()) {
+
             this.loadSignatureStatuses();
+
           }
+
         },
+
+
+        /*
+         * =====================================================
+         * ERROR
+         * =====================================================
+         */
 
         error: (err) => {
 
@@ -165,67 +341,108 @@ export class Dashboard implements OnInit {
             err
           );
 
+
+          /*
+           * Clear petition data
+           */
+
           this.allPetitions = [];
+
           this.petitions = [];
 
+
+          /*
+           * Reset citizen statistics
+           */
+
           this.myPetitionsCount = 0;
+
           this.successfulPetitionsCount = 0;
+
           this.pollsCreatedCount = 0;
 
+
+          /*
+           * Reset official statistics
+           */
+
           this.localPetitionsCount = 0;
+
           this.underReviewCount = 0;
+
           this.closedPetitionsCount = 0;
 
+
+          /*
+           * Update UI
+           */
+
           this.changeDetectorRef.detectChanges();
+
         }
+
       });
+
   }
 
 
-  /* =========================================================
-     CALCULATE STATISTICS
-  ========================================================= */
+  /*
+   * =========================================================
+   * CALCULATE STATISTICS
+   * =========================================================
+   */
 
   calculateStatistics(): void {
 
+
     /*
-     * Citizen statistics
+     * =======================================================
+     * CITIZEN STATISTICS
+     * =======================================================
      */
 
     this.myPetitionsCount =
       this.allPetitions.filter(
         petition =>
-          Number(petition.creator_id) === this.currentUserId
+          Number(petition.creator_id) ===
+          this.currentUserId
       ).length;
+
 
     this.successfulPetitionsCount =
       this.allPetitions.filter(
         petition =>
-          Number(petition.creator_id) === this.currentUserId &&
+          Number(petition.creator_id) ===
+          this.currentUserId &&
           petition.status === 'closed'
       ).length;
 
 
     /*
-     * Official statistics
+     * =======================================================
+     * OFFICIAL STATISTICS
+     * =======================================================
      *
-     * Officials have admin-like access.
-     * They can see ALL petitions, not only
-     * petitions from their own locality.
+     * Officials can see all petitions.
+     * =======================================================
      */
 
     if (this.isOfficial()) {
 
-      const allOfficialPetitions = this.allPetitions;
+      const allOfficialPetitions =
+        this.allPetitions;
+
 
       this.localPetitionsCount =
         allOfficialPetitions.length;
+
 
       this.underReviewCount =
         allOfficialPetitions.filter(
           petition =>
             petition.status === 'under_review'
         ).length;
+
 
       this.closedPetitionsCount =
         allOfficialPetitions.filter(
@@ -236,15 +453,21 @@ export class Dashboard implements OnInit {
     } else {
 
       this.localPetitionsCount = 0;
+
       this.underReviewCount = 0;
+
       this.closedPetitionsCount = 0;
+
     }
+
   }
 
 
-  /* =========================================================
-     LOAD SIGNATURE STATUS
-  ========================================================= */
+  /*
+   * =========================================================
+   * LOAD SIGNATURE STATUS
+   * =========================================================
+   */
 
   loadSignatureStatuses(): void {
 
@@ -259,25 +482,49 @@ export class Dashboard implements OnInit {
         )
         .subscribe({
 
+          /*
+           * =================================================
+           * SUCCESS
+           * =================================================
+           */
+
           next: (res) => {
 
             const targetPetition =
               this.allPetitions.find(
-                p => Number(p.id) === Number(petition.id)
+                p =>
+                  Number(p.id) ===
+                  Number(petition.id)
               );
 
+
             if (!targetPetition) {
+
               return;
+
             }
+
 
             targetPetition.signed =
               Boolean(res.signed);
 
+
             targetPetition.signatureCount =
-              Number(res.signatureCount || 0);
+              Number(
+                res.signatureCount ?? 0
+              );
+
 
             this.changeDetectorRef.detectChanges();
+
           },
+
+
+          /*
+           * =================================================
+           * ERROR
+           * =================================================
+           */
 
           error: (err) => {
 
@@ -286,52 +533,104 @@ export class Dashboard implements OnInit {
               err
             );
 
+
             const targetPetition =
               this.allPetitions.find(
-                p => Number(p.id) === Number(petition.id)
+                p =>
+                  Number(p.id) ===
+                  Number(petition.id)
               );
 
+
             if (!targetPetition) {
+
               return;
+
             }
 
+
             targetPetition.signed = false;
-            targetPetition.signatureCount = 0;
+
+            /*
+             * Keep backend count if available.
+             * Do not unnecessarily destroy it.
+             */
+
+            targetPetition.signatureCount =
+              Number(
+                targetPetition.signatureCount ?? 0
+              );
+
 
             this.changeDetectorRef.detectChanges();
+
           }
+
         });
+
     }
+
   }
 
 
-  /* =========================================================
-     SIGN PETITION
-  ========================================================= */
+  /*
+   * =========================================================
+   * SIGN PETITION
+   * =========================================================
+   */
 
   signPetition(
     petition: PetitionWithSignature
   ): void {
 
+    /*
+     * Only citizens can sign.
+     */
+
     if (!this.isCitizen()) {
+
       return;
+
     }
+
+
+    /*
+     * Prevent duplicate requests.
+     */
 
     if (petition.signing) {
+
       return;
+
     }
+
+
+    /*
+     * Already signed.
+     */
 
     if (petition.signed) {
+
       return;
+
     }
 
+
+    /*
+     * Only active petitions can be signed.
+     */
+
     if (petition.status !== 'active') {
+
       return;
+
     }
+
 
     petition.signing = true;
 
     this.changeDetectorRef.detectChanges();
+
 
     this.http
       .post<{
@@ -343,9 +642,16 @@ export class Dashboard implements OnInit {
       )
       .subscribe({
 
+        /*
+         * =================================================
+         * SUCCESS
+         * =================================================
+         */
+
         next: (res) => {
 
           petition.signed = true;
+
 
           petition.signatureCount =
             Number(
@@ -353,10 +659,20 @@ export class Dashboard implements OnInit {
               petition.signatureCount + 1
             );
 
+
           petition.signing = false;
 
+
           this.changeDetectorRef.detectChanges();
+
         },
+
+
+        /*
+         * =================================================
+         * ERROR
+         * =================================================
+         */
 
         error: (err) => {
 
@@ -365,43 +681,74 @@ export class Dashboard implements OnInit {
             err
           );
 
+
           petition.signing = false;
+
 
           const message =
             err?.error?.message ||
             'Failed to sign petition';
 
+
           alert(message);
 
+
           this.changeDetectorRef.detectChanges();
+
         }
+
       });
+
   }
 
 
-  /* =========================================================
-     UNSIGN PETITION
-  ========================================================= */
+  /*
+   * =========================================================
+   * UNSIGN PETITION
+   * =========================================================
+   */
 
   unsignPetition(
     petition: PetitionWithSignature
   ): void {
 
+    /*
+     * Only citizens can unsign.
+     */
+
     if (!this.isCitizen()) {
+
       return;
+
     }
+
+
+    /*
+     * Prevent duplicate requests.
+     */
 
     if (petition.signing) {
+
       return;
+
     }
 
+
+    /*
+     * Nothing to remove.
+     */
+
     if (!petition.signed) {
+
       return;
+
     }
+
 
     petition.signing = true;
 
     this.changeDetectorRef.detectChanges();
+
 
     this.http
       .delete<{
@@ -412,9 +759,16 @@ export class Dashboard implements OnInit {
       )
       .subscribe({
 
+        /*
+         * =================================================
+         * SUCCESS
+         * =================================================
+         */
+
         next: (res) => {
 
           petition.signed = false;
+
 
           petition.signatureCount =
             Math.max(
@@ -425,10 +779,20 @@ export class Dashboard implements OnInit {
               )
             );
 
+
           petition.signing = false;
 
+
           this.changeDetectorRef.detectChanges();
+
         },
+
+
+        /*
+         * =================================================
+         * ERROR
+         * =================================================
+         */
 
         error: (err) => {
 
@@ -437,23 +801,32 @@ export class Dashboard implements OnInit {
             err
           );
 
+
           petition.signing = false;
+
 
           const message =
             err?.error?.message ||
             'Failed to remove signature';
 
+
           alert(message);
 
+
           this.changeDetectorRef.detectChanges();
+
         }
+
       });
+
   }
 
 
-  /* =========================================================
-     APPLY SEARCH + CATEGORY + LOCATION FILTERS
-  ========================================================= */
+  /*
+   * =========================================================
+   * APPLY SEARCH + CATEGORY + LOCATION FILTERS
+   * =========================================================
+   */
 
   applyFilters(): void {
 
@@ -462,10 +835,12 @@ export class Dashboard implements OnInit {
         .trim()
         .toLowerCase();
 
+
     const selectedLocation =
       this.locationFilter
         .trim()
         .toLowerCase();
+
 
     const search =
       this.searchQuery
@@ -473,156 +848,200 @@ export class Dashboard implements OnInit {
         .toLowerCase();
 
 
+    /*
+     * Filter all petitions.
+     */
+
     this.petitions =
-      this.allPetitions.filter(petition => {
+      this.allPetitions.filter(
+        (petition) => {
 
-        /*
-         * CATEGORY CONDITION
-         */
 
-        const categoryMatches =
-          selectedCategory === 'all categories' ||
-          (
-            petition.category &&
-            petition.category
-              .trim()
-              .toLowerCase() === selectedCategory
+          /*
+           * =================================================
+           * CATEGORY CONDITION
+           * =================================================
+           */
+
+          const categoryMatches =
+            selectedCategory ===
+              'all categories' ||
+            (
+              petition.category &&
+              petition.category
+                .trim()
+                .toLowerCase() ===
+                selectedCategory
+            );
+
+
+          /*
+           * =================================================
+           * LOCATION CONDITION
+           * =================================================
+           *
+           * Empty location filter means:
+           * show all locations.
+           * =================================================
+           */
+
+          const locationMatches =
+            !selectedLocation ||
+            (
+              petition.location &&
+              petition.location
+                .trim()
+                .toLowerCase()
+                .includes(selectedLocation)
+            );
+
+
+          /*
+           * =================================================
+           * SEARCH CONDITION
+           * =================================================
+           *
+           * Search:
+           * - title
+           * - description
+           * - category
+           * - location
+           * =================================================
+           */
+
+          const searchMatches =
+            !search ||
+            (
+              petition.title &&
+              petition.title
+                .toLowerCase()
+                .includes(search)
+            ) ||
+            (
+              petition.description &&
+              petition.description
+                .toLowerCase()
+                .includes(search)
+            ) ||
+            (
+              petition.category &&
+              petition.category
+                .toLowerCase()
+                .includes(search)
+            ) ||
+            (
+              petition.location &&
+              petition.location
+                .toLowerCase()
+                .includes(search)
+            );
+
+
+          /*
+           * =================================================
+           * ALL CONDITIONS MUST MATCH
+           * =================================================
+           */
+
+          return (
+            categoryMatches &&
+            locationMatches &&
+            searchMatches
           );
 
-
-        /*
-         * MANUAL LOCATION FILTER
-         *
-         * This filter is optional.
-         *
-         * Officials can see all petitions by default.
-         * If they manually enter a location, petitions
-         * are filtered according to that location.
-         */
-
-        const locationMatches =
-          !selectedLocation ||
-          (
-            petition.location &&
-            petition.location
-              .trim()
-              .toLowerCase()
-              .includes(selectedLocation)
-          );
+        }
+      );
 
 
-        /*
-         * SEARCH CONDITION
-         *
-         * Search works on:
-         * - Petition title
-         * - Description
-         * - Category
-         * - Location
-         */
-
-        const searchMatches =
-          !search ||
-          (
-            petition.title &&
-            petition.title
-              .toLowerCase()
-              .includes(search)
-          ) ||
-          (
-            petition.description &&
-            petition.description
-              .toLowerCase()
-              .includes(search)
-          ) ||
-          (
-            petition.category &&
-            petition.category
-              .toLowerCase()
-              .includes(search)
-          ) ||
-          (
-            petition.location &&
-            petition.location
-              .toLowerCase()
-              .includes(search)
-          );
-
-
-        /*
-         * ALL CONDITIONS MUST MATCH
-         */
-
-        return (
-          categoryMatches &&
-          locationMatches &&
-          searchMatches
-        );
-      });
-
+    /*
+     * Update Angular UI.
+     */
 
     this.changeDetectorRef.detectChanges();
+
   }
 
 
-  /* =========================================================
-     SEARCH PETITIONS
-  ========================================================= */
+  /*
+   * =========================================================
+   * SEARCH PETITIONS
+   * =========================================================
+   */
 
   searchPetitions(): void {
+
     this.applyFilters();
+
   }
 
 
-  /* =========================================================
-     SELECT CATEGORY
-  ========================================================= */
+  /*
+   * =========================================================
+   * SELECT CATEGORY
+   * =========================================================
+   */
 
-  selectCategory(category: string): void {
+  selectCategory(
+    category: string
+  ): void {
 
-    this.selectedCategory = category;
+    this.selectedCategory =
+      category;
 
     this.applyFilters();
+
   }
 
 
-  /* =========================================================
-     CLEAR LOCATION FILTER
-  ========================================================= */
+  /*
+   * =========================================================
+   * CLEAR LOCATION FILTER
+   * =========================================================
+   */
 
   clearLocationFilter(): void {
 
     this.locationFilter = '';
 
     this.applyFilters();
+
   }
 
 
-  /* =========================================================
-     CLEAR ALL FILTERS
-  ========================================================= */
+  /*
+   * =========================================================
+   * CLEAR ALL FILTERS
+   * =========================================================
+   */
 
   clearFilters(): void {
 
-    this.selectedCategory = 'All Categories';
+    this.selectedCategory =
+      'All Categories';
 
     this.locationFilter = '';
 
     this.searchQuery = '';
 
     this.applyFilters();
+
   }
 
 
-  /* =========================================================
-     LOGOUT
-  ========================================================= */
+  /*
+   * =========================================================
+   * LOGOUT
+   * =========================================================
+   */
 
   logout(): void {
 
     this.authService.logout();
 
-    this.router.navigate(['/login']);
+    this.router.navigate([
+      '/login'
+    ]);
+
   }
 
 }

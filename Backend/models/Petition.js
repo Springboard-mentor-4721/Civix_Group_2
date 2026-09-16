@@ -6,26 +6,26 @@ const petitionSchema = new mongoose.Schema(
     id: {
       type: Number,
       unique: true,
-      index: true
+      index: true,
     },
 
     creator_id: {
       type: Number,
       required: true,
-      index: true
+      index: true,
     },
 
     title: {
       type: String,
       required: true,
       maxlength: 200,
-      trim: true
+      trim: true,
     },
 
     description: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     category: {
@@ -33,7 +33,7 @@ const petitionSchema = new mongoose.Schema(
       required: true,
       maxlength: 100,
       trim: true,
-      index: true
+      index: true,
     },
 
     location: {
@@ -41,7 +41,7 @@ const petitionSchema = new mongoose.Schema(
       required: true,
       maxlength: 100,
       trim: true,
-      index: true
+      index: true,
     },
 
     status: {
@@ -49,13 +49,28 @@ const petitionSchema = new mongoose.Schema(
       required: true,
       enum: ["active", "under_review", "closed"],
       default: "active",
-      index: true
-    }
+      index: true,
+    },
+
+    /*
+     * Maximum number of signatures targeted
+     * by the petition creator.
+     */
+    signatureLimit: {
+      type: Number,
+      default: 100,
+      min: 1,
+    },
   },
+
   {
-    timestamps: false
-  }
+    timestamps: false,
+  },
 );
+
+/* =========================================================
+   AUTO-INCREMENT PETITION ID
+   ========================================================= */
 
 petitionSchema.pre("save", async function (next) {
   if (!this.isNew) {
@@ -64,12 +79,20 @@ petitionSchema.pre("save", async function (next) {
 
   try {
     const counter = await Counter.findOneAndUpdate(
-      { _id: "petitions" },
-      { $inc: { seq: 1 } },
+      {
+        _id: "petitions",
+      },
+
+      {
+        $inc: {
+          seq: 1,
+        },
+      },
+
       {
         new: true,
-        upsert: true
-      }
+        upsert: true,
+      },
     );
 
     this.id = counter.seq;
