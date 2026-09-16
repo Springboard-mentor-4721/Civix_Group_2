@@ -1,7 +1,7 @@
 {
   "name": "civix-backend",
   "version": "1.0.0",
-  "description": "Civix Digital Civic Engagement & Petition Platform - Module 1 backend",
+  "description": "Civix Digital Civic Engagement & Petition Platform - Milestones 1-3 backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

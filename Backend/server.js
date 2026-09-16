@@ -13,7 +13,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     message: "Civix backend is running",
-    module: "Module 1 - User Authentication & Roles"
+    module: "Milestones 1-3 - Authentication, Petitions & Polling"
   });
 });
 
@@ -26,6 +26,10 @@ const locationRoutes = require("./routes/locationRoutes");
 app.use("/api/location", locationRoutes);
 
 app.use("/api/petitions", petitionRoutes);
+
+// Milestone 3 - Polling and Feedback
+const pollRoutes = require("./routes/pollRoutes");
+app.use("/api/polls", pollRoutes);
 
 
 const PORT = process.env.PORT || 5000;
