@@ -1,0 +1,131 @@
+.poll-detail-page {
+    min-height: 100vh;
+    padding: 36px 20px;
+    background: linear-gradient(135deg, #f9f7ff 0%, #ecf6ff 100%);
+    color: #1a2348;
+}
+
+.back-link {
+    max-width: 980px;
+    margin: 0 auto 18px;
+}
+
+.back-link a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.detail-card {
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(162, 175, 230, 0.4);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 24px 40px rgba(114, 124, 191, 0.11);
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: #586dd9;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.detail-card h1 {
+    margin: 0;
+    font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.meta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 18px 0 24px;
+    color: #4d5d85;
+    font-weight: 600;
+}
+
+.vote-panel,
+.results-panel {
+    background: #f7f9ff;
+    border: 1px solid rgba(155, 165, 220, 0.3);
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.vote-status {
+    margin: 0 0 12px;
+    color: #59627f;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(155, 165, 220, 0.25);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+}
+
+.vote-btn {
+    margin-top: 18px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.vote-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.result-row {
+    margin-top: 16px;
+}
+
+.result-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.bar-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(107, 114, 185, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+}
+
+.state-box {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 22px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(162, 175, 230, 0.4);
+}
+
+.state-box.error {
+    color: #b91c1c;
+    background: rgba(239, 68, 68, 0.05);
+}

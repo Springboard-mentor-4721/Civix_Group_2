@@ -21,6 +21,27 @@ export const routes: Routes = [
     },
 
     {
+        path: 'polls',
+        loadComponent: () =>
+            import('./polls/poll-board/poll-board')
+                .then(m => m.PollBoard)
+    },
+
+    {
+        path: 'polls/create',
+        loadComponent: () =>
+            import('./polls/create-poll/create-poll')
+                .then(m => m.CreatePoll)
+    },
+
+    {
+        path: 'polls/:id',
+        loadComponent: () =>
+            import('./polls/poll-detail/poll-detail')
+                .then(m => m.PollDetail)
+    },
+
+    {
         path: 'petitions/create',
         loadComponent: () =>
             import('./petitions/create-petition/create-petition')

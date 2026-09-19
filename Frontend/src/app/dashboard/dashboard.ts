@@ -180,6 +180,7 @@ export class Dashboard implements OnInit {
 
     this.searchQuery = '';
 
+    this.loadPollStats();
     this.loadPetitions();
   }
 
@@ -224,12 +225,32 @@ export class Dashboard implements OnInit {
    * =========================================================
    */
 
+  loadPollStats(): void {
+    if (!this.currentUserId) {
+      this.pollsCreatedCount = 0;
+      return;
+    }
+
+    this.http
+      .get<any[]>(`${API_BASE_URL}/polls?created_by=${this.currentUserId}`)
+      .subscribe({
+        next: (polls) => {
+          this.pollsCreatedCount = Array.isArray(polls) ? polls.length : 0;
+          this.changeDetectorRef.detectChanges();
+        },
+        error: () => {
+          this.pollsCreatedCount = 0;
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+  }
+
   loadPetitions(): void {
 
     console.log('Loading petitions...');
 
     this.http
-      .get<Petition[]>(`${API_BASE_URL}/petitions`)
+      .get<Petition[] | { count: number; petitions: Petition[] }>(`${API_BASE_URL}/petitions`)
       .subscribe({
 
         /*
@@ -246,17 +267,10 @@ export class Dashboard implements OnInit {
           );
 
 
-          /*
-           * Backend returns a direct array.
-           *
-           * Safety check ensures that an unexpected
-           * response does not break the dashboard.
-           */
-
           const receivedPetitions =
             Array.isArray(res)
               ? res
-              : [];
+              : (Array.isArray(res?.petitions) ? res.petitions : []);
 
 
           /*
@@ -298,7 +312,7 @@ export class Dashboard implements OnInit {
            */
 
           this.calculateStatistics();
-
+          this.loadPollStats();
 
           /*
            * Apply filters
@@ -865,13 +879,13 @@ export class Dashboard implements OnInit {
 
           const categoryMatches =
             selectedCategory ===
-              'all categories' ||
+            'all categories' ||
             (
               petition.category &&
               petition.category
                 .trim()
                 .toLowerCase() ===
-                selectedCategory
+              selectedCategory
             );
 
 

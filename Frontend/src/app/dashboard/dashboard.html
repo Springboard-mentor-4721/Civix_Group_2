@@ -38,7 +38,7 @@
             </a>
 
 
-            <a href="javascript:void(0)" class="nav-link disabled-link" title="Polls page is not available yet">
+            <a routerLink="/polls" routerLinkActive="active" class="nav-link">
 
                 <span class="nav-icon">◈</span>
 
@@ -337,6 +337,10 @@
                     <p>
                         Monitor petitions in your locality and stay informed about community concerns.
                     </p>
+                    <div class="hero-actions">
+                        <a routerLink="/polls" class="hero-action primary">View Polls</a>
+                        <a routerLink="/polls/create" class="hero-action secondary">Create Poll</a>
+                    </div>
 
                 </div>
 
@@ -481,7 +485,6 @@
                     </div>
 
                 </div>
-
             </section>
 
 
@@ -575,6 +578,37 @@
                             completed petitions
                         </div>
 
+                    </div>
+
+                </div>
+
+
+                <!-- POLLS CREATED -->
+
+                <div class="stat-card poll-stat-card" routerLink="/polls">
+
+                    <div class="stat-icon orange">
+                        ◈
+                    </div>
+
+                    <div class="stat-content">
+
+                        <div class="stat-title">
+                            Polls Created
+                        </div>
+
+                        <div class="stat-value">
+                            {{ pollsCreatedCount }}
+                        </div>
+
+                        <div class="stat-label">
+                            view and manage polls
+                        </div>
+
+                    </div>
+
+                    <div class="stat-arrow orange-arrow">
+                        →
                     </div>
 
                 </div>

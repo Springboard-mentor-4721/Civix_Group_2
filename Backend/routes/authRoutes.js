@@ -50,5 +50,21 @@ router.get(
   getMe
 );
 
+router.get(
+  "/official-test",
+  protect,
+  authorizeRoles("official"),
+  (req, res) => {
+    res.status(200).json({
+      message: "Official authorization verified",
+      user: {
+        id: req.user.id,
+        name: req.user.name,
+        role: req.user.role
+      }
+    });
+  }
+);
+
 
 module.exports = router;

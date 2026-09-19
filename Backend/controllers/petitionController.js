@@ -372,6 +372,18 @@ const signPetition = async (req, res) => {
       });
     }
 
+    const signatureCountBeforeSigning = await Signature.countDocuments({
+      petition_id: petitionId,
+    });
+
+    if (signatureCountBeforeSigning >= petition.signatureLimit) {
+      return res.status(409).json({
+        message: "This petition has reached its signature limit",
+        signatureCount: signatureCountBeforeSigning,
+        signatureLimit: petition.signatureLimit,
+      });
+    }
+
     const signature = await Signature.create({
       petition_id: petitionId,
 

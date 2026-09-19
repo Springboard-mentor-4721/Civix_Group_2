@@ -1036,6 +1036,36 @@
     width: 70%;
 }
 
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.hero-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.hero-action.primary {
+    background: #5f43d8;
+    color: #ffffff;
+}
+
+.hero-action.secondary {
+    border: 1px solid #d9d5f5;
+    background: #ffffff;
+    color: #5f43d8;
+}
+
 
 /* =========================================================
    STATS GRID
@@ -2414,4 +2444,8 @@
 
         min-width: 0;
     }
+}
+
+.poll-stat-card {
+    cursor: pointer;
 }

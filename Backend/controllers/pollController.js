@@ -144,7 +144,7 @@ const getPolls = async (req, res) => {
 
     const userVotes = new Set(
       votes
-        .filter((vote) => vote.user_id === req.user.id)
+        .filter((vote) => req.user && vote.user_id === req.user.id)
         .map((vote) => vote.poll_id)
     );
 
@@ -176,7 +176,9 @@ const getPollById = async (req, res) => {
     }
 
     const votes = await Vote.find({ poll_id: pollId }).lean();
-    const userVote = votes.find((vote) => vote.user_id === req.user.id);
+    const userVote = req.user
+      ? votes.find((vote) => vote.user_id === req.user.id)
+      : null;
 
     return res.status(200).json({
       poll,
@@ -236,7 +238,9 @@ const votePoll = async (req, res) => {
     }
 
     const votes = await Vote.find({ poll_id: pollId }).lean();
-    const userVote = votes.find((vote) => vote.user_id === req.user.id);
+    const userVote = req.user
+      ? votes.find((vote) => vote.user_id === req.user.id)
+      : null;
 
     return res.status(201).json({
       message: "Vote recorded successfully",
@@ -263,7 +267,9 @@ const getPollResults = async (req, res) => {
     }
 
     const votes = await Vote.find({ poll_id: pollId }).lean();
-    const userVote = votes.find((vote) => vote.user_id === req.user.id);
+    const userVote = req.user
+      ? votes.find((vote) => vote.user_id === req.user.id)
+      : null;
 
     return res.status(200).json(
       buildResults(poll, votes, userVote)

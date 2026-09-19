@@ -83,7 +83,7 @@ export class EditPetition implements OnInit {
     this.errorMessage = '';
 
     this.http
-      .get<{
+      .get<Petition | {
         petition: Petition;
         signatureCount: number;
       }>(
@@ -98,7 +98,7 @@ export class EditPetition implements OnInit {
             res
           );
 
-          const petition = res?.petition;
+          const petition = 'petition' in res ? res.petition : res;
 
           if (!petition) {
 
@@ -148,9 +148,9 @@ export class EditPetition implements OnInit {
 
           this.loading = false;
 
-          this.errorMessage =
-            err?.error?.message ||
-            'Failed to load petition';
+          this.errorMessage = err?.status === 401
+            ? 'Your session has expired. Please log in again.'
+            : err?.error?.message || 'Failed to load petition';
 
           this.changeDetectorRef.detectChanges();
         }
