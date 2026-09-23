@@ -4,6 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
+const governanceRoutes = require("./routes/governanceRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+
 const app = express();
 const petitionRoutes = require("./routes/petitionRoutes");
 
@@ -26,6 +29,16 @@ const locationRoutes = require("./routes/locationRoutes");
 app.use("/api/location", locationRoutes);
 
 app.use("/api/petitions", petitionRoutes);
+
+app.use(
+  "/api/governance",
+  governanceRoutes
+);
+
+app.use(
+  "/api/reports",
+  reportRoutes
+);
 
 // Milestone 3 - Polling and Feedback
 const pollRoutes = require("./routes/pollRoutes");
