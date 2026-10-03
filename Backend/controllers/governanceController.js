@@ -10,6 +10,16 @@ function parsePetitionId(value) {
     : null;
 }
 
+function petitionIsInOfficialLocality(petition, official) {
+  const officialLocation = String(official.location || "").trim().toLowerCase();
+  const petitionLocation = String(petition.location || "").trim().toLowerCase();
+
+  return Boolean(
+    officialLocation &&
+    petitionLocation.includes(officialLocation)
+  );
+}
+
 
 /*
 =========================================================
@@ -28,10 +38,11 @@ const getLocalPetitions = async (req, res) => {
     }
 
     const location = String(officialLocation).trim();
+    const escapedLocation = location.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const petitions = await Petition.find({
       location: {
-        $regex: location,
+        $regex: escapedLocation,
         $options: "i"
       }
     })
@@ -44,12 +55,12 @@ const getLocalPetitions = async (req, res) => {
 
     const responses = petitionIds.length
       ? await GovernanceResponse.find({
-          petition_id: {
-            $in: petitionIds
-          }
-        })
-          .sort({ createdAt: -1 })
-          .lean()
+        petition_id: {
+          $in: petitionIds
+        }
+      })
+        .sort({ createdAt: -1 })
+        .lean()
       : [];
 
     const responseMap = new Map();
@@ -116,20 +127,7 @@ const getGovernancePetition = async (req, res) => {
       });
     }
 
-    const officialLocation =
-      String(req.user.location || "")
-        .trim()
-        .toLowerCase();
-
-    const petitionLocation =
-      String(petition.location || "")
-        .trim()
-        .toLowerCase();
-
-    if (
-      !officialLocation ||
-      !petitionLocation.includes(officialLocation)
-    ) {
+    if (!petitionIsInOfficialLocality(petition, req.user)) {
       return res.status(403).json({
         message:
           "You can only access petitions from your locality"
@@ -223,20 +221,7 @@ const respondToPetition = async (req, res) => {
      * in their own locality.
      */
 
-    const officialLocation =
-      String(req.user.location || "")
-        .trim()
-        .toLowerCase();
-
-    const petitionLocation =
-      String(petition.location || "")
-        .trim()
-        .toLowerCase();
-
-    if (
-      !officialLocation ||
-      !petitionLocation.includes(officialLocation)
-    ) {
+    if (!petitionIsInOfficialLocality(petition, req.user)) {
       return res.status(403).json({
         message:
           "You can only respond to petitions from your locality"
@@ -324,6 +309,12 @@ const getResponseHistory = async (req, res) => {
     if (!petition) {
       return res.status(404).json({
         message: "Petition not found"
+      });
+    }
+
+    if (!petitionIsInOfficialLocality(petition, req.user)) {
+      return res.status(403).json({
+        message: "You can only view responses for petitions from your locality"
       });
     }
 

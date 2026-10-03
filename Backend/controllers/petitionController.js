@@ -1,5 +1,6 @@
 const Petition = require("../models/Petition");
 const Signature = require("../models/Signature");
+const GovernanceResponse = require("../models/GovernanceResponse");
 
 // =========================================================
 // CREATE PETITION
@@ -169,10 +170,23 @@ const getPetitions = async (req, res) => {
       countMap.set(item._id, item.count);
     });
 
+    const governanceResponses = petitionIds.length
+      ? await GovernanceResponse.find({
+        petition_id: { $in: petitionIds }
+      }).sort({ createdAt: -1 }).lean()
+      : [];
+    const latestResponseByPetition = new Map();
+    governanceResponses.forEach((response) => {
+      if (!latestResponseByPetition.has(response.petition_id)) {
+        latestResponseByPetition.set(response.petition_id, response);
+      }
+    });
+
     const petitionsWithCounts = petitions.map((petition) => ({
       ...petition,
 
       signatureCount: countMap.get(petition.id) || 0,
+      latestResponse: latestResponseByPetition.get(petition.id) || null,
     }));
 
     return res.status(200).json(petitionsWithCounts);

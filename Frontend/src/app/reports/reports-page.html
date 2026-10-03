@@ -1,0 +1,91 @@
+<main class="reports-page">
+    <header class="page-heading">
+        <div>
+            <a routerLink="/dashboard" class="back-link">← Dashboard</a>
+            <p class="eyebrow">CIVIC ENGAGEMENT</p>
+            <h1>Monthly reports</h1>
+            <p class="subtitle">Petition activity, public signatures, governance responses, and poll participation.</p>
+        </div>
+        <div class="report-controls">
+            <label for="report-month">Report month</label>
+            <input id="report-month" type="month" [(ngModel)]="selectedMonth" name="month" />
+            <button type="button" class="load-button" (click)="loadReport()" [disabled]="loading">
+                {{ loading ? 'Generating…' : 'Generate report' }}
+            </button>
+            <button type="button" class="export-button" (click)="exportCsv()" [disabled]="exporting || !report">
+                {{ exporting ? 'Exporting…' : 'Export CSV' }}
+            </button>
+        </div>
+    </header>
+
+    <p *ngIf="error" class="error-message" role="alert">{{ error }}</p>
+    <div *ngIf="loading" class="state-message">Generating monthly report…</div>
+
+    <ng-container *ngIf="report && !loading">
+        <p class="period-line">Reporting period: {{ report.period.start | date:'longDate':'UTC' }} – {{
+            report.period.end | date:'longDate':'UTC' }}</p>
+
+        <section class="metric-grid" aria-label="Monthly summary">
+            <article class="metric"><span>Petitions created</span><strong>{{ report.petitions.totalCreated }}</strong>
+            </article>
+            <article class="metric"><span>Signatures received</span><strong>{{ report.signatures.total
+                    }}</strong><small>{{ report.signatures.uniqueUsers }} unique participants</small></article>
+            <article class="metric"><span>Official responses</span><strong>{{ report.governance.totalResponses
+                    }}</strong><small>{{ report.governance.petitionsRespondedTo }} petitions responded to</small>
+            </article>
+            <article class="metric"><span>Poll participation</span><strong>{{ report.polling.votesRecorded
+                    }}</strong><small>{{ report.polling.pollsCreated }} polls created</small></article>
+        </section>
+
+        <section class="report-grid">
+            <article class="report-section">
+                <h2>Petitions by status</h2>
+                <div class="breakdown-row" *ngFor="let row of entries(report.petitions.byStatus)">
+                    <span>{{ row.name.replace('_', ' ') }}</span><strong>{{ row.count }}</strong>
+                </div>
+            </article>
+            <article class="report-section">
+                <h2>Petitions by category</h2>
+                <p *ngIf="!entries(report.petitions.byCategory).length" class="subtle">No petitions created in this
+                    period.</p>
+                <div class="breakdown-row" *ngFor="let row of entries(report.petitions.byCategory)">
+                    <span>{{ row.name }}</span><strong>{{ row.count }}</strong>
+                </div>
+            </article>
+        </section>
+
+        <section class="report-section details-section">
+            <div class="table-heading">
+                <div>
+                    <h2>Petition activity</h2>
+                    <p>Records created during the selected month.</p>
+                </div><span>{{ report.petitions.details.length }} records</span>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Petition</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Signatures this month</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let petition of report.petitions.details">
+                            <td>{{ petition.title }}</td>
+                            <td>{{ petition.category }}</td>
+                            <td>{{ petition.location }}</td>
+                            <td class="capitalize">{{ petition.status.replace('_', ' ') }}</td>
+                            <td>{{ petition.signatureCount }} / {{ petition.signatureLimit }}</td>
+                        </tr>
+                        <tr *ngIf="!report.petitions.details.length">
+                            <td colspan="5" class="subtle">No petition records for this month.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </ng-container>
+</main>

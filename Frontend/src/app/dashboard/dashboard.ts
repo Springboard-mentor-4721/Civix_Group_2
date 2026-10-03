@@ -27,6 +27,11 @@ interface Petition {
 
   // Backend returns this field
   signatureCount?: number;
+  latestResponse?: {
+    comment: string;
+    status: 'active' | 'under_review' | 'closed';
+    createdAt: string;
+  } | null;
 }
 
 
@@ -249,8 +254,12 @@ export class Dashboard implements OnInit {
 
     console.log('Loading petitions...');
 
+    const petitionsUrl = this.isOfficial()
+      ? `${API_BASE_URL}/governance/petitions`
+      : `${API_BASE_URL}/petitions`;
+
     this.http
-      .get<Petition[] | { count: number; petitions: Petition[] }>(`${API_BASE_URL}/petitions`)
+      .get<Petition[] | { count: number; petitions: Petition[] }>(petitionsUrl)
       .subscribe({
 
         /*

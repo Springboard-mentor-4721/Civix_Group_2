@@ -108,30 +108,18 @@ const getMonthlyReport = async (req, res) => {
         .lean();
 
 
-    const petitionIds =
-      petitions.map(
-        petition => petition.id
-      );
-
-
     /*
     =====================================================
     SIGNATURES
     =====================================================
     */
 
-    const signatures =
-      petitionIds.length
-        ? await Signature.find({
-            petition_id: {
-              $in: petitionIds
-            },
-            timestamp: {
-              $gte: start,
-              $lt: end
-            }
-          }).lean()
-        : [];
+    const signatures = await Signature.find({
+      timestamp: {
+        $gte: start,
+        $lt: end
+      }
+    }).lean();
 
 
     /*
@@ -201,10 +189,14 @@ const getMonthlyReport = async (req, res) => {
     const votes =
       pollIds.length
         ? await Vote.find({
-            poll_id: {
-              $in: pollIds
-            }
-          }).lean()
+          poll_id: {
+            $in: pollIds
+          },
+          createdAt: {
+            $gte: start,
+            $lt: end
+          }
+        }).lean()
         : [];
 
 
@@ -494,24 +486,12 @@ const exportMonthlyReport = async (req, res) => {
         .lean();
 
 
-    const petitionIds =
-      petitions.map(
-        petition => petition.id
-      );
-
-
-    const signatures =
-      petitionIds.length
-        ? await Signature.find({
-            petition_id: {
-              $in: petitionIds
-            },
-            timestamp: {
-              $gte: range.start,
-              $lt: range.end
-            }
-          }).lean()
-        : [];
+    const signatures = await Signature.find({
+      timestamp: {
+        $gte: range.start,
+        $lt: range.end
+      }
+    }).lean();
 
 
     const responses =
@@ -545,10 +525,14 @@ const exportMonthlyReport = async (req, res) => {
     const votes =
       pollIds.length
         ? await Vote.find({
-            poll_id: {
-              $in: pollIds
-            }
-          }).lean()
+          poll_id: {
+            $in: pollIds
+          },
+          createdAt: {
+            $gte: range.start,
+            $lt: range.end
+          }
+        }).lean()
         : [];
 
 
@@ -660,8 +644,8 @@ const exportMonthlyReport = async (req, res) => {
           ) || 0,
           petition.createdAt
             ? new Date(
-                petition.createdAt
-              ).toISOString()
+              petition.createdAt
+            ).toISOString()
             : ""
         ]);
       }
@@ -699,8 +683,8 @@ const exportMonthlyReport = async (req, res) => {
           response.comment,
           response.createdAt
             ? new Date(
-                response.createdAt
-              ).toISOString()
+              response.createdAt
+            ).toISOString()
             : ""
         ]);
       }

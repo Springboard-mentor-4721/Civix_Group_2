@@ -53,6 +53,18 @@ export class AuthService {
         localStorage.removeItem('civix_user');
     }
 
+    isAuthenticated(): boolean {
+        return Boolean(this.token);
+    }
+
+    isCitizen(): boolean {
+        return this.currentUser?.role === 'citizen';
+    }
+
+    isOfficial(): boolean {
+        return this.currentUser?.role === 'official';
+    }
+
     get token(): string | null {
         return localStorage.getItem('civix_token');
     }

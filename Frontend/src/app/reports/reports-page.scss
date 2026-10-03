@@ -1,0 +1,261 @@
+:host {
+    display: block;
+    min-height: 100vh;
+}
+
+.reports-page {
+    min-height: 100vh;
+    padding: 36px clamp(18px, 5vw, 72px) 64px;
+    background: #f3f6fa;
+    color: #17243b;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.page-heading {
+    max-width: 1180px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #326b69;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #327f76;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 42px);
+}
+
+.subtitle,
+.table-heading p {
+    margin: 9px 0 0;
+    color: #64748b;
+}
+
+.report-controls {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.report-controls label {
+    width: 100%;
+    color: #536273;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.report-controls input {
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ccd6df;
+    border-radius: 5px;
+    background: white;
+    font: inherit;
+}
+
+.load-button,
+.export-button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.load-button {
+    background: #23796f;
+    color: white;
+}
+
+.export-button {
+    background: #253a51;
+    color: white;
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.period-line {
+    max-width: 1180px;
+    margin: 0 auto 12px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.metric-grid,
+.report-grid {
+    max-width: 1180px;
+    margin: 0 auto 16px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.metric,
+.report-section {
+    padding: 18px;
+    border: 1px solid #dce4eb;
+    border-radius: 7px;
+    background: white;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.metric span {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.metric strong {
+    color: #17243b;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.metric small {
+    color: #77869a;
+    font-size: 11px;
+}
+
+.report-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-section h2 {
+    margin: 0 0 15px;
+    font-size: 17px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #edf1f4;
+    color: #4b5b6d;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.breakdown-row:last-child {
+    border-bottom: 0;
+}
+
+.details-section {
+    max-width: 1180px;
+    margin: auto;
+}
+
+.table-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.table-heading h2 {
+    margin: 0;
+}
+
+.table-heading span {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+}
+
+th,
+td {
+    padding: 11px 10px;
+    border-bottom: 1px solid #e9eef2;
+    white-space: nowrap;
+}
+
+th {
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+.subtle {
+    color: #718096;
+}
+
+.error-message,
+.state-message {
+    max-width: 1180px;
+    margin: 0 auto 16px;
+    padding: 13px 15px;
+    border: 1px solid #dce4eb;
+    border-radius: 5px;
+    background: white;
+}
+
+.error-message {
+    color: #a33232;
+    border-color: #f0cccc;
+    background: #fff8f8;
+}
+
+@media (max-width: 850px) {
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+
+    .report-grid,
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-controls {
+        width: 100%;
+    }
+
+    .report-controls input {
+        flex: 1 1 100%;
+    }
+}

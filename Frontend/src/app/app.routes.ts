@@ -21,6 +21,18 @@ export const routes: Routes = [
     },
 
     {
+        path: 'governance',
+        loadComponent: () =>
+            import('./governance/governance-page').then(m => m.GovernancePage)
+    },
+
+    {
+        path: 'reports',
+        loadComponent: () =>
+            import('./reports/reports-page').then(m => m.ReportsPage)
+    },
+
+    {
         path: 'polls',
         loadComponent: () =>
             import('./polls/poll-board/poll-board')
