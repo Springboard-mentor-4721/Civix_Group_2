@@ -1,0 +1,51 @@
+<section class="poll-detail-page">
+    <div class="back-link">
+        <a routerLink="/polls">← Back to Polls</a>
+    </div>
+
+    <div *ngIf="loading" class="state-box">Loading poll...</div>
+    <div *ngIf="error" class="state-box error">{{ error }}</div>
+
+    <div *ngIf="poll && results" class="detail-card">
+        <p class="eyebrow">PUBLIC POLL</p>
+        <h1>{{ poll.title }}</h1>
+        <div class="meta-row">
+            <span>📍 {{ poll.target_location }}</span>
+            <span>👥 {{ results.totalVotes }} votes</span>
+        </div>
+
+        <div class="vote-panel">
+            <h3>Cast your vote</h3>
+
+            <p *ngIf="results.userVoted" class="vote-status">
+                You have already voted in this poll. Each participant can vote once.
+            </p>
+
+            <label class="option-item" *ngFor="let option of poll.options">
+                <input type="radio" name="vote-option" [value]="option" [(ngModel)]="selectedOption"
+                    [disabled]="results.userVoted" />
+                <span>{{ option }}</span>
+            </label>
+
+            <button class="vote-btn" type="button" (click)="vote()"
+                [disabled]="voting || results.userVoted || !selectedOption">
+                {{ voting ? 'Submitting vote...' : results.userVoted ? 'Vote submitted' : 'Submit vote' }}
+            </button>
+        </div>
+
+        <div class="results-panel">
+            <h3>Results</h3>
+
+            <div class="result-row" *ngFor="let item of results.results">
+                <div class="result-label-row">
+                    <span>{{ item.option }}</span>
+                    <span>{{ item.percentage }}%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" [style.width.%]="item.percentage"></div>
+                </div>
+                <small>{{ item.votes }} votes</small>
+            </div>
+        </div>
+    </div>
+</section>

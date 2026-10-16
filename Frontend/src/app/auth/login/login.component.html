@@ -1,0 +1,46 @@
+<div class="auth-page">
+  <app-auth-layout class="auth-page__panel"></app-auth-layout>
+
+  <div class="auth-page__form">
+    <div class="auth-card">
+      <h2 class="auth-card__title">Welcome to Civix</h2>
+      <p class="auth-card__subtitle">Join our platform to make your voice heard in local governance.</p>
+
+      <div class="auth-tabs">
+        <span class="auth-tabs__item auth-tabs__item--active">Login</span>
+        <a class="auth-tabs__item" routerLink="/register">Register</a>
+      </div>
+
+      <p class="form-error-banner" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" placeholder="your@email.com"
+            [class.form-field__input--error]="email?.invalid && email?.touched" />
+          <span class="form-field__error" *ngIf="email?.invalid && email?.touched">
+            Enter a valid email address.
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password" placeholder="••••••••"
+            [class.form-field__input--error]="password?.invalid && password?.touched" />
+          <span class="form-field__error" *ngIf="password?.invalid && password?.touched">
+            Password must be at least 6 characters.
+          </span>
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="submitting">
+          {{ submitting ? 'Signing in…' : 'Sign In' }}
+        </button>
+      </form>
+
+      <p class="auth-card__footer">
+        Don't have an account?
+        <a routerLink="/register">Register now</a>
+      </p>
+    </div>
+  </div>
+</div>

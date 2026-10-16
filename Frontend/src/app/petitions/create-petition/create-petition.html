@@ -1,0 +1,231 @@
+<div class="create-petition-page">
+
+    <!-- Top Back -->
+    <button type="button" class="top-back-btn" (click)="goBack()" [disabled]="loading">
+        <span class="back-icon">←</span>
+        <span>Back to Dashboard</span>
+    </button>
+
+    <!-- Left Content -->
+    <div class="side-content left-content">
+        <h2>Your<br />Voice<br />Matters</h2>
+
+        <p>
+            Create petitions.<br />
+            Build change.<br />
+            Stronger together.
+        </p>
+
+        <div class="small-line"></div>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="petition-card">
+
+        <div class="card-header">
+            <div class="document-icon">
+                <span>📄</span>
+                <span class="plus-icon">+</span>
+            </div>
+
+            <h1>Create a Petition</h1>
+
+            <p>
+                Raise your voice for a better tomorrow.
+                Fill in the details below to create your petition.
+            </p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()">
+
+            <!-- Title -->
+            <label>
+                <span class="label-text">
+                    <span class="field-icon">▤</span>
+                    Title <span class="required">*</span>
+                </span>
+
+                <input
+                    type="text"
+                    [(ngModel)]="title"
+                    name="title"
+                    maxlength="200"
+                    placeholder="Enter a clear and concise title for your petition"
+                />
+
+                <span class="character-count">
+                    {{ title.length }}/200
+                </span>
+            </label>
+
+            <!-- Description -->
+            <label>
+                <span class="label-text">
+                    <span class="field-icon">☷</span>
+                    Description <span class="required">*</span>
+                </span>
+
+                <textarea
+                    [(ngModel)]="description"
+                    name="description"
+                    rows="5"
+                    placeholder="Provide details about your petition, the issue, and what changes you want to see..."
+                ></textarea>
+            </label>
+
+            <!-- Category + Location -->
+            <div class="two-column">
+
+                <label>
+                    <span class="label-text">
+                        <span class="field-icon">◇</span>
+                        Category <span class="required">*</span>
+                    </span>
+
+                    <select
+                        [(ngModel)]="category"
+                        name="category"
+                    >
+                        <option value="" disabled>
+                            Select category
+                        </option>
+
+                        <option
+                            *ngFor="let c of categories"
+                            [value]="c"
+                        >
+                            {{ c }}
+                        </option>
+                    </select>
+                </label>
+
+                <label>
+                    <span class="label-text">
+                        <span class="field-icon">⌖</span>
+                        Location <span class="required">*</span>
+                    </span>
+
+                    <input
+                        type="text"
+                        [(ngModel)]="location"
+                        name="location"
+                        placeholder="e.g. San Diego, CA"
+                    />
+                </label>
+
+            </div>
+
+            <!-- Signature Limit -->
+            <label>
+                <span class="label-text">
+                    <span class="field-icon">♧</span>
+                    Signature Limit <span class="required">*</span>
+                </span>
+
+                <select
+                    [(ngModel)]="signatureLimit"
+                    name="signatureLimit"
+                >
+                    <option [ngValue]="null" disabled>
+                        Select signature limit
+                    </option>
+
+                    <option
+                        *ngFor="let limit of signatureLimits"
+                        [ngValue]="limit"
+                    >
+                        {{ limit }} signatures
+                    </option>
+                </select>
+
+                <span class="helper-text">
+                    ⓘ Choose how many signatures you want to collect for this petition.
+                </span>
+            </label>
+
+            <!-- Error -->
+            <p
+                class="error"
+                *ngIf="errorMessage"
+            >
+                {{ errorMessage }}
+            </p>
+
+            <!-- Buttons -->
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="back-btn"
+                    (click)="goBack()"
+                    [disabled]="loading"
+                >
+                    <span>←</span>
+                    Back
+                </button>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    [disabled]="loading"
+                >
+                    <span class="send-icon">➤</span>
+                    {{ loading ? 'Submitting...' : 'Submit Petition' }}
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Right Content -->
+    <div class="side-content right-content">
+
+        <div class="change-text">
+            <h3>Be the change</h3>
+            <p>Start a petition, make an impact.</p>
+        </div>
+
+        <div class="community-message">
+            <strong>
+                A Better<br />
+                Community<br />
+                Starts With You
+            </strong>
+        </div>
+
+        <!-- CSS Illustration -->
+        <div class="community-illustration">
+
+            <div class="sun"></div>
+
+            <div class="building building-one"></div>
+            <div class="building building-two"></div>
+            <div class="building building-three"></div>
+
+            <div class="person person-one">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-left"></div>
+                <div class="arm arm-right"></div>
+            </div>
+
+            <div class="person person-two">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-left"></div>
+                <div class="arm arm-right"></div>
+            </div>
+
+            <div class="person person-three">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="arm arm-left"></div>
+                <div class="arm arm-right"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

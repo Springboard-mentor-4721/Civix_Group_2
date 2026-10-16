@@ -1,0 +1,85 @@
+<main class="governance-page">
+    <header class="page-heading">
+        <div>
+            <a routerLink="/dashboard" class="back-link">← Dashboard</a>
+            <p class="eyebrow">OFFICIAL PORTAL</p>
+            <h1>Local governance desk</h1>
+            <p class="subtitle">Review petitions in your locality and publish status updates for residents.</p>
+        </div>
+        <button class="refresh-button" type="button" (click)="loadPetitions()" [disabled]="loading">
+            {{ loading ? 'Refreshing…' : 'Refresh petitions' }}
+        </button>
+    </header>
+
+    <p *ngIf="error" class="message error-message" role="alert">{{ error }}</p>
+    <p *ngIf="notice" class="message success-message" role="status">{{ notice }}</p>
+    <div *ngIf="loading" class="empty-state">Loading local petitions…</div>
+    <div *ngIf="!loading && !petitions.length" class="empty-state">
+        <h2>No local petitions found</h2>
+        <p>Petitions matching your registered locality will appear here.</p>
+    </div>
+
+    <section class="petition-list" *ngIf="!loading && petitions.length">
+        <article class="petition-row" *ngFor="let petition of petitions">
+            <div class="petition-copy">
+                <div class="petition-title-line">
+                    <h2>{{ petition.title }}</h2>
+                    <span class="status" [class.status-active]="petition.status === 'active'"
+                        [class.status-review]="petition.status === 'under_review'"
+                        [class.status-closed]="petition.status === 'closed'">
+                        {{ petition.status.replace('_', ' ') }}
+                    </span>
+                </div>
+                <p class="petition-description">{{ petition.description }}</p>
+                <div class="petition-meta">
+                    <span>{{ petition.category }}</span>
+                    <span>{{ petition.location }}</span>
+                    <span>{{ petition.signatureCount }} / {{ petition.signatureLimit || '—' }} signatures</span>
+                </div>
+                <div class="latest-response" *ngIf="petition.latestResponse as latest">
+                    <strong>Latest official update · {{ latest.status.replace('_', ' ') }}</strong>
+                    <p>{{ latest.comment }}</p>
+                    <time>{{ latest.createdAt | date:'medium' }}</time>
+                </div>
+            </div>
+            <button type="button" class="respond-button" (click)="openResponsePanel(petition)">
+                Respond / update status
+            </button>
+
+            <section class="response-panel" *ngIf="activePetitionId === petition.id">
+                <div class="response-heading">
+                    <h3>Publish an update</h3>
+                    <button type="button" class="close-button" aria-label="Close response panel"
+                        (click)="closeResponsePanel()">×</button>
+                </div>
+                <p *ngIf="responseLoading" class="subtle">Loading response history…</p>
+                <div class="history" *ngIf="!responseLoading && responses.length">
+                    <h4>Previous updates</h4>
+                    <article class="history-item" *ngFor="let response of responses">
+                        <div><strong>{{ response.status.replace('_', ' ') }}</strong><time>{{ response.createdAt |
+                                date:'medium' }}</time></div>
+                        <p>{{ response.comment }}</p>
+                    </article>
+                </div>
+                <p *ngIf="!responseLoading && !responses.length" class="subtle">No official updates yet.</p>
+                <label class="field-label" for="response-status-{{ petition.id }}">Petition status</label>
+                <select id="response-status-{{ petition.id }}" [(ngModel)]="responseStatus"
+                    name="status-{{ petition.id }}">
+                    <option value="active">Active</option>
+                    <option value="under_review">Under review</option>
+                    <option value="closed">Closed</option>
+                </select>
+                <label class="field-label" for="response-comment-{{ petition.id }}">Public comment</label>
+                <textarea id="response-comment-{{ petition.id }}" [(ngModel)]="comment" name="comment-{{ petition.id }}"
+                    maxlength="2000" rows="4" placeholder="Explain the action taken or next steps…"></textarea>
+                <div class="form-footer">
+                    <span>{{ comment.length }}/2000</span>
+                    <button type="button" class="publish-button" [disabled]="submitting || !comment.trim()"
+                        (click)="submitResponse(petition)">
+                        {{ submitting ? 'Publishing…' : 'Publish update' }}
+                    </button>
+                </div>
+            </section>
+        </article>
+    </section>
+</main>
